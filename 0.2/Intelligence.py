@@ -10,7 +10,8 @@ class Intelligence:
             "recall":"",
             "memory":"[python \"self.CacheStore(self.entity.Memory)\"]",
             "print":"[python \"print(self.CacheRetrieve(0))\"]",
-            "approval":"0"
+            "approval":"0",
+            "return":"[python \"self.CacheStore(self.CacheRetrieve(0), -2)\"]"
             }
 
 
