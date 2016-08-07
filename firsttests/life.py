@@ -29,8 +29,8 @@ class Interpreter:
 
 
 
-        #self.RunConcept("[mutate [concept-list]]")
-        self.ParseConcepts("[mutate [concept-list]][thing][thingy (and) \"yes\"]")
+        self.RunConcept("[mutate [concept-list]]")
+        #self.ParseConcepts("[mutate [concept-list]][thing][thingy (and) \"yes and no and \\\"QUOTES!!!\\\"\"]")
 
 
 
@@ -42,6 +42,7 @@ class Interpreter:
 
 
     def ParseConcepts(self, concept):
+        print("Parsing '" + concept + "'...")
         braceLevel = 0
         quoteLevel = 0
         parenLevel = 0
@@ -90,23 +91,22 @@ class Interpreter:
                 
 
         print(concepts)
+        return concepts
+    
+    #def CompileConcept(self, concepts):
+        # does the reverse of the function above, so we can both construct and deconstruct concepts
+
+
+    def RunConcept(self, conceptString):
+        conceptList = self.ParseConcepts(conceptString)
+        
+        for concept in conceptList:
+            print("CONCEPT: " + concept[0])
+            for argument in concept[1]:
+                print("\tARGUMENT: " + str(argument))
 
         
-
-    def ParseAllConcepts(self, concept): #this won't get literally every concept, only top two levels
-        matches = self.ParseHighConcepts(concept)
-        allConcepts = matches
-        for match in matches:
-            args = match[1][1:]
-            argmatches = re.findall(self.compiledArgumentPattern, args)
-            for arg in argmatches:
-                if arg.startswith("[") or arg.startswith("("):
-                    allConcepts.append(arg)
-
-        return allConcepts
-            
-
-    def RunConcept(self, concept):
+    def RunConcept2(self, concept):
         print(concept)
         matches = self.ParseHighConcepts(concept)
         #print(matches)
