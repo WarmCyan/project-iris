@@ -3,15 +3,19 @@ class Intelligence:
 
     Memory = {
             #"self":"[mutate (self)][query (approval)][remember (self) (approval)][self]",
-            "self":"[print (memory)]",
+            "self":"[print [memory]]",
             "mutate":"",
             "query":"",
             "remember":"",
             "recall":"",
-            "memory":"[python \"self.CacheStore(self.entity.Memory)\"]",
-            "print":"[python \"print(self.CacheRetrieve(0))\"]",
-            "approval":"0",
-            "return":"[python \"self.CacheStore(self.CacheRetrieve(0), -2)\"]"
+            "memory":"[python \"self.CacheStore(self.entity.Memory, -2)\"]",
+            #"print":"[python \"print(self.CacheRetrieve(0))\"]",
+            "print":"[python \"print(self.CacheRetrieve(0, -1))\"]",
+
+            "return":"[python \"self.CacheStore(self.CacheRetrieve(0), -2)\"]",
+            "set":"[python \"exec(self.CacheRetrieve(0) + \" = \" + self.CacheRetrieve(1))\"]",
+
+            "approval":"0"
             }
 
 

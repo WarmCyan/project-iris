@@ -4,10 +4,6 @@ import re
 class IntelligencePlatform:
 
     entity = None
-    conceptPattern = """\[([\w\-\_]+)((?:(?:\s?\[\w+[\[()\s\w\-\_\."]*\])|(?:[\s"()\w\-\_\$\.\=]*))*)\]"""
-    argumentPattern = """((?:"[\w\s\-\_\.(?:\\\")\=$\[\]]*")|(?:\([\w\-\_\.]+\))|(?:\[(?:[\w\-\_\.]+)(?:(?:(?:\s?\[\w+[\[()\s\w\-\_\."]*\])|(?:[\s"()\w\-\_\.\$\=]*))*)\]))"""
-    compiledConceptPattern = None
-    compiledArgumentPattern = None
             
     level = 0
     cache = []
@@ -21,6 +17,8 @@ class IntelligencePlatform:
         print("Starting life...\n")
         self.RunConceptExecute("[self]")
         #self.RunConceptExecute("[print [memory]]")
+
+        #print(self.ParseConcepts("(thingy (MOARTHINGY))"))
 
     # get the concepts and arguments from a string   
     def ParseConcepts(self, conceptString, indent = ""):
@@ -64,7 +62,7 @@ class IntelligencePlatform:
                 
             # argument handling
             if not recordingConcept:
-                if character == " " and braceLevel == 1 and quoteLevel == 0: # space signifies next argument (assuming not in higher level of braces
+                if character == " " and (braceLevel == 1 or parenLevel == 1) and quoteLevel == 0: # space signifies next argument (assuming not in higher level of braces
                     concepts[conceptNum][1].append("")
                     argNum += 1
                 else:
@@ -75,11 +73,28 @@ class IntelligencePlatform:
         print(indent + "Parsed " + str(concepts))
         return concepts 
 
+
+    def GetLevelIndent(self, level):
+        indent = ""
+        for i in range(0, level):
+            indent += "    "
+        return indent
+
+    def RunConceptGet(self, conceptString):
+        print("Intelligence:" + conceptString)
+        indent = self.GetLevelIndent(self.level)
+        print(indent + "LEVEL: " + str(self.level))
+
+        conceptList = self.ParseConcepts(conceptString, indent)
+
+        # the thing should be the first
+        conceptName = conceptList[0][0]
+        self.CacheStore("self.entity.Memory[\"" + conceptName + "\"]")
+        
+
     def RunConceptExecute(self, conceptString):
         print("Intelligence:" + conceptString)
-        indent = ""
-        for i in range(0, self.level):
-            indent += "    "
+        indent = self.GetLevelIndent(self.level)
 
         print(indent + "LEVEL: " + str(self.level))
 
@@ -102,12 +117,15 @@ class IntelligencePlatform:
                     self.level += 1
                     self.RunConceptExecute(argument)
                     self.level -= 1
-                self.argNum[self.level] += 1
 
                 # get argument
-                #if argument.startswith("("):
-                    #print(indent + "[" = str(self.level) + "](getting argument '" + argument = "')")
-                    #self.level += 1
+                if argument.startswith("("):
+                    print(indent + "[" + str(self.level) + "](getting argument '" + argument + "')")
+                    self.level += 1
+                    self.RunConceptGet(argument)
+                    self.level -= 1
+
+                self.argNum[self.level] += 1
 
             # execute concept
             if concept[0] == "python":
