@@ -1,7 +1,38 @@
 import Intelligence
 import re
+import time
+
+LOG_CACHE = "cache"
+LOG_CACHE_DETAIL = "cachedetail"
+LOG_CONCEPT_PARSE = "conceptparse"
+LOG_INTELLIGENCE = "intelligence"
+LOG_SYNTAX = "syntax"
+LOG_TIMING = "timing"
+LOG_ERROR = "error"
+LOG_PLATFORM = "platform"
 
 class IntelligencePlatform:
+
+
+    # LOG TYPES:
+    # cache - status messages about when cache is being accessed
+    # cachedetail - prints what's being put into cache 
+    # conceptparse - status and results of concept parsing
+    # intelligence - strings intelligence is passing to platform
+    # syntax - granular information about syntax parsing and what's being executed
+    # error - any error messages
+    # platform - platform messages
+
+    logCacheOn = True
+    logCacheDetailOn = False
+    logConceptParseOn = False
+    logIntelligenceOn = True
+    logSyntaxOn = True
+    logTimingOn = True
+    logErrorOn = True
+    logPlatformOn = True
+
+
 
     entity = None
             
@@ -9,12 +40,14 @@ class IntelligencePlatform:
     cache = []
     argNum = []
 
+    timeStack = []
+
     def InitializeIntelligence(self):
-        print("Instantiating new intelligence instance...")
+        self.Log("Instantiating new intelligence instance...", LOG_PLATFORM)
         self.entity = Intelligence.Intelligence()
 
     def StartLife(self):
-        print("Starting life...\n")
+        self.Log("Starting life...\n", LOG_PLATFORM)
         self.RunConceptExecute("[self]")
         #self.RunConceptExecute("[print [memory]]")
 
@@ -23,7 +56,7 @@ class IntelligencePlatform:
     # get the concepts and arguments from a string   
     def ParseConcepts(self, conceptString, indent = ""):
         indent += "- " 
-        print(indent + "Parsing '" + conceptString + "'...")
+        self.Log(indent + "Parsing '" + conceptString + "'...", LOG_CONCEPT_PARSE)
         braceLevel = 0
         quoteLevel = 0
         parenLevel = 0
@@ -70,7 +103,7 @@ class IntelligencePlatform:
                 
             if ESCAPE: ESCAPE = False
                 
-        print(indent + "Parsed " + str(concepts))
+        self.Log(indent + "Parsed " + str(concepts), LOG_CONCEPT_PARSE)
         return concepts 
 
 
@@ -81,9 +114,9 @@ class IntelligencePlatform:
         return indent
 
     def RunConceptGet(self, conceptString):
-        print("Intelligence:" + conceptString)
+        self.Log("Intelligence:" + conceptString, LOG_INTELLIGENCE)
         indent = self.GetLevelIndent(self.level)
-        print(indent + "LEVEL: " + str(self.level))
+        self.Log(indent + "LEVEL: " + str(self.level), LOG_SYNTAX)
 
         conceptList = self.ParseConcepts(conceptString, indent)
 
@@ -93,15 +126,15 @@ class IntelligencePlatform:
         
 
     def RunConceptExecute(self, conceptString):
-        print("Intelligence:" + conceptString)
+        self.Log("Intelligence:" + conceptString, LOG_INTELLIGENCE)
         indent = self.GetLevelIndent(self.level)
 
-        print(indent + "LEVEL: " + str(self.level))
+        self.Log(indent + "LEVEL: " + str(self.level), LOG_SYNTAX)
 
         conceptList = self.ParseConcepts(conceptString, indent)
 
         for concept in conceptList:
-            print(indent + "CONCEPT: " + concept[0])
+            self.Log(indent + "CONCEPT: " + concept[0], LOG_SYNTAX)
 
             # ensure argnum exists for this level
             while len(self.argNum) <= self.level:
@@ -109,36 +142,46 @@ class IntelligencePlatform:
                 
             self.argNum[self.level] = 0
             for argument in concept[1]:
-                print(indent + "  ARGUMENT: " + str(argument))
+                self.Log(indent + "  ARGUMENT: " + str(argument), LOG_SYNTAX)
 
                 # execute argument 
                 if argument.startswith("["):
-                    print(indent + "[" + str(self.level) + "](executing argument '" + argument + "')")
+                    self.Log(indent + "[" + str(self.level) + "](executing argument '" + argument + "')", LOG_SYNTAX)
                     self.level += 1
+                    self.timeStack.append(time.clock()) # TIMING
                     self.RunConceptExecute(argument)
+                    runTime = (time.clock() - self.timeStack.pop()) * 1000
                     self.level -= 1
+
+                    self.Log(indent + "[" + str(self.level) + "](argument '" + argument + "' execution: .......... " + str(runTime) + " ms)", LOG_TIMING)
 
                 # get argument
                 if argument.startswith("("):
-                    print(indent + "[" + str(self.level) + "](getting argument '" + argument + "')")
+                    self.Log(indent + "[" + str(self.level) + "](getting argument '" + argument + "')", LOG_SYNTAX)
                     self.level += 1
+                    self.timeStack.append(time.clock()) # TIMING
                     self.RunConceptGet(argument)
+                    runTime = (time.clock() - self.timeStack.pop()) * 1000
                     self.level -= 1
+
+                    self.Log(indent + "[" + str(self.level) + "](argument '" + argument + "' obtained: .......... " + str(runTime) + " ms)", LOG_TIMING)
 
                 self.argNum[self.level] += 1
 
             # execute concept
             if concept[0] == "python":
                 code = concept[1][0][1:-1]
-                print(indent + "EXECUTING: '" + code + "'")
+                self.Log(indent + "EXECUTING: '" + code + "'", LOG_SYNTAX)
                 exec(code)
             else:
                 runstring = self.entity.Memory[concept[0]]
-                print(indent + "[" + str(self.level) + "](executing concept '" + concept[0] + "')")
+                self.Log(indent + "[" + str(self.level) + "](executing concept '" + concept[0] + "')", LOG_SYNTAX)
                 self.level += 1
+                self.timeStack.append(time.clock()) # TIMING
                 self.RunConceptExecute(runstring)
+                runTime = (time.clock() - self.timeStack.pop()) * 1000
                 self.level -= 1
-                #print("CLEAR CACHE " + str(self.level) + " HERE?")
+                self.Log(indent + "[" + str(self.level) + "](concept '" + concept[0] + "' execution: ......... " + str(runTime) + " ms)", LOG_TIMING)
                 self.CacheClear()
 
     # verifies appropriate structures exist in cache, then stores object in cache based on level
@@ -156,30 +199,60 @@ class IntelligencePlatform:
         while len(self.cache[level]) <= self.argNum[level]:
             self.cache[level].append("")
         
-        print("**CACHE**:: STORING at level " + str(level) + " at " + str(self.argNum[level]))
+        self.Log("**CACHE**:: STORING at level " + str(level) + " at " + str(self.argNum[level]), LOG_CACHE)
+        self.Log("**CACHE**:: DETAIL:\n########## STORE ##########\n" + str(obj) + "\n###########################", LOG_CACHE_DETAIL)
         self.cache[level][self.argNum[level]] = obj
 
     def CacheRetrieve(self, argNum, offset = 0):
         level = self.level + offset
 
-        print("**CACHE**:: RETRIEVING at level " + str(level) + " at " + str(argNum))
+        self.Log("**CACHE**:: RETRIEVING at level " + str(level) + " at " + str(argNum), LOG_CACHE)
 
         obj = None
         try: obj = self.cache[level][argNum]
         except IndexError:
-            print("**CACHE**:: RETRIVAL FAILURE")
+            self.Log("**CACHE**:: RETRIVAL FAILURE", LOG_CACHE)
             return None
+        self.Log("**CACHE**:: DETAIL:\n########## RETRIEVE ##########\n" + str(obj) + "\n##############################", LOG_CACHE_DETAIL)
         return obj
 
     def CacheClear(self, offset = 0):
         level = self.level + offset
 
-        print("**CACHE**:: CLEARING level " + str(level))
+        self.Log("**CACHE**:: CLEARING level " + str(level), LOG_CACHE)
         try: 
             self.cache[level] = []
             self.argNum[level] = 0
         except IndexError:
-            print("**CACHE**:: CLEARING FAILURE")
+            self.Log("**CACHE**:: CLEARING FAILURE", LOG_CACHE)
             
-    #def Log(self, msg, level = 0):
-        #print(msg)
+    def Log(self, msg, level = "default"):
+        if level == LOG_CACHE and self.logCacheOn: 
+            print(msg)
+            return
+        elif level == LOG_CACHE_DETAIL and self.logCacheDetailOn:
+            print(msg)
+            return
+        elif level == LOG_CONCEPT_PARSE and self.logConceptParseOn:
+            print(msg)
+            return
+        elif level == LOG_INTELLIGENCE and self.logIntelligenceOn:
+            print(msg)
+            return
+        elif level == LOG_SYNTAX and self.logSyntaxOn:
+            print(msg)
+            return
+        elif level == LOG_TIMING and self.logTimingOn:
+            print(msg)
+            return
+        elif level == LOG_ERROR and self.logErrorOn:
+            print(msg)
+            return
+        elif level == LOG_PLATFORM and self.logPlatformOn:
+            print(msg)
+            return
+        elif level == "default":
+            print(msg)
+            return
+        else:
+            return
