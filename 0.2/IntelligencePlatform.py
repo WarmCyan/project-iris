@@ -7,6 +7,7 @@ LOG_CACHE_DETAIL = "cachedetail"
 LOG_CONCEPT_PARSE = "conceptparse"
 LOG_INTELLIGENCE = "intelligence"
 LOG_SYNTAX = "syntax"
+LOG_EXECUTION = "execution"
 LOG_TIMING = "timing"
 LOG_ERROR = "error"
 LOG_PLATFORM = "platform"
@@ -28,7 +29,8 @@ class IntelligencePlatform:
     logConceptParseOn = False
     logIntelligenceOn = True
     logSyntaxOn = True
-    logTimingOn = True
+    logExecutionOn = True
+    logTimingOn = False
     logErrorOn = True
     logPlatformOn = True
 
@@ -146,7 +148,7 @@ class IntelligencePlatform:
 
                 # execute argument 
                 if argument.startswith("["):
-                    self.Log(indent + "[" + str(self.level) + "](executing argument '" + argument + "')", LOG_SYNTAX)
+                    self.Log(indent + "[" + str(self.level) + "](executing argument '" + argument + "')", LOG_EXECUTION)
                     self.level += 1
                     self.timeStack.append(time.clock()) # TIMING
                     self.RunConceptExecute(argument)
@@ -157,7 +159,7 @@ class IntelligencePlatform:
 
                 # get argument
                 if argument.startswith("("):
-                    self.Log(indent + "[" + str(self.level) + "](getting argument '" + argument + "')", LOG_SYNTAX)
+                    self.Log(indent + "[" + str(self.level) + "](getting argument '" + argument + "')", LOG_EXECUTION)
                     self.level += 1
                     self.timeStack.append(time.clock()) # TIMING
                     self.RunConceptGet(argument)
@@ -175,7 +177,7 @@ class IntelligencePlatform:
                 exec(code)
             else:
                 runstring = self.entity.Memory[concept[0]]
-                self.Log(indent + "[" + str(self.level) + "](executing concept '" + concept[0] + "')", LOG_SYNTAX)
+                self.Log(indent + "[" + str(self.level) + "](executing concept '" + concept[0] + "')", LOG_EXECUTION)
                 self.level += 1
                 self.timeStack.append(time.clock()) # TIMING
                 self.RunConceptExecute(runstring)
@@ -240,6 +242,9 @@ class IntelligencePlatform:
             print(msg)
             return
         elif level == LOG_SYNTAX and self.logSyntaxOn:
+            print(msg)
+            return
+        elif level == LOG_EXECUTION and self.logExecutionOn:
             print(msg)
             return
         elif level == LOG_TIMING and self.logTimingOn:
