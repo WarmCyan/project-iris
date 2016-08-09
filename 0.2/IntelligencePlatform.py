@@ -138,6 +138,8 @@ class IntelligencePlatform:
                 self.level += 1
                 self.RunConceptExecute(runstring)
                 self.level -= 1
+                #print("CLEAR CACHE " + str(self.level) + " HERE?")
+                self.CacheClear()
 
     # verifies appropriate structures exist in cache, then stores object in cache based on level
     # if for some reason trying to get a different level's cache, specify an offset
@@ -168,4 +170,16 @@ class IntelligencePlatform:
             print("**CACHE**:: RETRIVAL FAILURE")
             return None
         return obj
+
+    def CacheClear(self, offset = 0):
+        level = self.level + offset
+
+        print("**CACHE**:: CLEARING level " + str(level))
+        try: 
+            self.cache[level] = []
+            self.argNum[level] = 0
+        except IndexError:
+            print("**CACHE**:: CLEARING FAILURE")
             
+    #def Log(self, msg, level = 0):
+        #print(msg)

@@ -8,17 +8,21 @@ class Intelligence:
             "query":"",
             "remember":"",
             "recall":"",
-            "memory":"[python \"self.CacheStore(self.entity.Memory, -2)\"]",
+            #"memory":"[python \"self.CacheStore(self.entity.Memory, -2)\"]",
+            "memory":"[return (memory)]",
             #"print":"[python \"print(self.CacheRetrieve(0))\"]",
             "print":"[python \"print(self.CacheRetrieve(0, -1))\"]",
 
-            "return":"[python \"self.CacheStore(self.CacheRetrieve(0), -2)\"]",
-            "set":"[python \"exec(self.CacheRetrieve(0) + \" = \" + self.CacheRetrieve(1))\"]",
+            "argument":"[python \"self.CacheStore(self.CacheRetrieve(0, -3), -2)\"]",
+            "return":"[python \"self.CacheStore(self.CacheRetrieve(0, -1), -3)\"]",
+            "set":"[python \"exec(self.CacheRetrieve(0, -1) + \" = \" + self.CacheRetrieve(1, -1))\"]",
 
             "approval":"0"
             }
 
 
+    # 2: [print "THING"] //thing is arg level 2
+    # 3: [python etc etc, needs to get level above it
 
 
 # issue:
