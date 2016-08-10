@@ -10,10 +10,11 @@ class Intelligence:
             #"self":"[print [value [test]]]",
 
             #"self":"[print [run [value [test]]]]",
-            "self":"[print [run [value (memory)]]]]",
+            #"self":"[print [run [value (memory)]]]]",
             #"self":"[print [value [run [value (memory)]]]]",
             #"self":"[print [value [memory]]]",
-            #"self":"[print [value [run [value [test]]]]]",
+            "self":"[print [value [run [value [test]]]]]",
+            #"self":"[print [value (print)]]",
             
 
             "mutate":"",

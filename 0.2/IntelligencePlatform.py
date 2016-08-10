@@ -26,11 +26,11 @@ class IntelligencePlatform:
 
     logCacheOn = True
     logCacheDetailOn = True
-    logConceptParseOn = False
+    logConceptParseOn = True
     logIntelligenceOn = True
     logSyntaxOn = True
     logExecutionOn = True
-    logTimingOn = False
+    logTimingOn = True
     logErrorOn = True
     logPlatformOn = True
 
@@ -221,7 +221,7 @@ class IntelligencePlatform:
             self.cache[level].append("")
         
         self.Log("**CACHE**:: STORING at level " + str(level) + " at " + str(self.argNum[level]), LOG_CACHE)
-        self.Log("########## STORE ##########\n" + str(obj) + "\n###########################", LOG_CACHE_DETAIL)
+        self.Log("########## STORE ##########\n" + str(obj) + "\n###########################\n", LOG_CACHE_DETAIL)
         self.cache[level][self.argNum[level]] = obj
 
     def CacheRetrieve(self, argNum, offset = 0):
@@ -234,7 +234,7 @@ class IntelligencePlatform:
         except IndexError:
             self.Log("**CACHE**:: RETRIVAL FAILURE", LOG_CACHE)
             return None
-        self.Log("########## RETRIEVE ##########\n" + str(obj) + "\n##############################", LOG_CACHE_DETAIL)
+        self.Log("########## RETRIEVE ##########\n" + str(obj) + "\n##############################\n", LOG_CACHE_DETAIL)
         return obj
 
     def CacheClear(self, offset = 0):
