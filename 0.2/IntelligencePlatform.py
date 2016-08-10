@@ -25,7 +25,7 @@ class IntelligencePlatform:
     # platform - platform messages
 
     logCacheOn = True
-    logCacheDetailOn = False
+    logCacheDetailOn = True
     logConceptParseOn = False
     logIntelligenceOn = True
     logSyntaxOn = True
@@ -97,7 +97,8 @@ class IntelligencePlatform:
                 
             # argument handling
             if not recordingConcept:
-                if character == " " and (braceLevel == 1 or parenLevel == 1) and quoteLevel == 0: # space signifies next argument (assuming not in higher level of braces
+                #print(character + " PAREN LEVEL " + str(parenLevel))
+                if character == " " and ((braceLevel == 1 and parenLevel == 0) or (braceLevel == 0 and parenLevel == 1)) and quoteLevel == 0: # space signifies next argument (assuming not in higher level of braces
                     concepts[conceptNum][1].append("")
                     argNum += 1
                 else:
@@ -115,16 +116,34 @@ class IntelligencePlatform:
             indent += "    "
         return indent
 
-    def RunConceptGet(self, conceptString):
+    def RunConceptGet(self, conceptString, multiLevel = False):
         self.Log("Intelligence:" + conceptString, LOG_INTELLIGENCE)
         indent = self.GetLevelIndent(self.level)
         self.Log(indent + "LEVEL: " + str(self.level), LOG_SYNTAX)
 
         conceptList = self.ParseConcepts(conceptString, indent)
 
+        reference = ""
+
         # the thing should be the first
         conceptName = conceptList[0][0]
-        self.CacheStore("self.entity.Memory[\"" + conceptName + "\"]")
+        if not multiLevel: reference = "self.entity.Memory[\"" + conceptName + "\"]"
+        else: reference = "[\"" + conceptName + "\"]"
+
+        if len(conceptList[0][1]) > 0:
+            self.Log(indent + "[" + str(self.level) + "](getting argument '" + str(conceptList[0][1]) + "')", LOG_EXECUTION)
+            self.level += 1
+            self.timeStack.append(time.clock()) # TIMING
+            reference += self.RunConceptGet(conceptList[0][1][0], True)
+            runTime = (time.clock() - self.timeStack.pop()) * 1000
+            self.level -= 1
+            
+            self.Log(indent + "[" + str(self.level) + "](argument '" + str(conceptList[0][1]) + "' obtained: .......... " + str(runTime) + " ms)", LOG_TIMING)
+            
+        if not multiLevel: self.CacheStore(reference)
+        else: return reference
+        
+        #self.CacheStore("self.entity.Memory[\"" + conceptName + "\"]")
         
 
     def RunConceptExecute(self, conceptString):
@@ -202,7 +221,7 @@ class IntelligencePlatform:
             self.cache[level].append("")
         
         self.Log("**CACHE**:: STORING at level " + str(level) + " at " + str(self.argNum[level]), LOG_CACHE)
-        self.Log("**CACHE**:: DETAIL:\n########## STORE ##########\n" + str(obj) + "\n###########################", LOG_CACHE_DETAIL)
+        self.Log("########## STORE ##########\n" + str(obj) + "\n###########################", LOG_CACHE_DETAIL)
         self.cache[level][self.argNum[level]] = obj
 
     def CacheRetrieve(self, argNum, offset = 0):
@@ -215,7 +234,7 @@ class IntelligencePlatform:
         except IndexError:
             self.Log("**CACHE**:: RETRIVAL FAILURE", LOG_CACHE)
             return None
-        self.Log("**CACHE**:: DETAIL:\n########## RETRIEVE ##########\n" + str(obj) + "\n##############################", LOG_CACHE_DETAIL)
+        self.Log("########## RETRIEVE ##########\n" + str(obj) + "\n##############################", LOG_CACHE_DETAIL)
         return obj
 
     def CacheClear(self, offset = 0):

@@ -3,21 +3,43 @@ class Intelligence:
 
     Memory = {
             #"self":"[mutate (self)][query (approval)][remember (self) (approval)][self]",
-            "self":"[print [memory]]",
+            #"self":"[print [memory]]",
+            #"self":"[print [value (memory)]]",
+            #"self":"[print (dictionary (a))]",
+            #"self":"[print [value (dictionary (b))]]",
+            #"self":"[print [value [test]]]",
+
+            #"self":"[print [run [value [test]]]]",
+            "self":"[print [run [value (memory)]]]]",
+            #"self":"[print [value [run [value (memory)]]]]",
+            #"self":"[print [value [memory]]]",
+            #"self":"[print [value [run [value [test]]]]]",
+            
+
             "mutate":"",
             "query":"",
             "remember":"",
             "recall":"",
             #"memory":"[python \"self.CacheStore(self.entity.Memory, -2)\"]",
-            "memory":"[return (memory)]",
+            "memory":"[return (print)]",
             #"print":"[python \"print(self.CacheRetrieve(0))\"]",
             "print":"[python \"print(self.CacheRetrieve(0, -1))\"]",
 
+            "value":"[python \"self.CacheStore(eval(self.CacheRetrieve(0, -1)), -2)\"]",
             "argument":"[python \"self.CacheStore(self.CacheRetrieve(0, -3), -2)\"]",
             "return":"[python \"self.CacheStore(self.CacheRetrieve(0, -1), -3)\"]",
             "set":"[python \"exec(self.CacheRetrieve(0, -1) + \" = \" + self.CacheRetrieve(1, -1))\"]",
+            "run":"[python \"self.RunConceptExecute(self.CacheRetrieve(0, -1))\"]",
 
-            "approval":"0"
+
+
+            "approval":"0",
+            "dictionary":{
+                "a":"hello world!!!!",
+                "b":"I'M ANOTHER THING!!"
+                },
+
+            "test":"[return (memory)]"
             }
 
 
