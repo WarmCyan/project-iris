@@ -13,9 +13,11 @@ class Intelligence:
             #"self":"[print [run [value (memory)]]]]",
             #"self":"[print [value [run [value (memory)]]]]",
             #"self":"[print [value [memory]]]",
-            "self":"[print [value [run [value [test]]]]]",
+            #"self":"[print [value [run [value [test]]]]]",
             #"self":"[print [value (print)]]",
             
+            #"self":"[set (THING) \"thing\"][print [value (THING)]]",
+            "self":"[print [value [runvalue (memory)]]]",
 
             "mutate":"",
             "query":"",
@@ -32,6 +34,8 @@ class Intelligence:
             "set":"[python \"exec(self.CacheRetrieve(0, -1) + \" = \" + self.CacheRetrieve(1, -1))\"]",
             "run":"[python \"self.RunConceptExecute(self.CacheRetrieve(0, -1))\"]",
 
+
+            "runvalue":"[set (TEMP) [argument]][return [run [value (TEMP)]]]",
 
 
             "approval":"0",

@@ -187,6 +187,11 @@ class IntelligencePlatform:
 
                     self.Log(indent + "[" + str(self.level) + "](argument '" + argument + "' obtained: .......... " + str(runTime) + " ms)", LOG_TIMING)
 
+                # literal argument (but not for the python!!!)
+                if argument.startswith("\"") and concept[0] != "python":
+                    self.Log(indent + "[" + str(self.level) + "](storing literal argument " + argument + ")")
+                    self.CacheStore(argument, 0)
+
                 self.argNum[self.level] += 1
 
             # execute concept
