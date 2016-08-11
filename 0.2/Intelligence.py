@@ -19,7 +19,8 @@ class Intelligence:
             #"self":"[set (THING) \"thing\"][print [value (THING)]]",
             #"self":"[print [value [runvalue (memory)]]]",
             #"self":"[print [runvalue (memory)]]]",
-            "self":"[set (THING (THING1)) \"yes\"][print [value (THING (THING1))]]",
+            #"self":"[set (THING (THING1)) \"yes\"][print [value (THING (THING1))]]",
+            "self":"[set (THING (THING1)) (self)][print [value (THING (THING1))]]",
 
             "mutate":"",
             "query":"",
