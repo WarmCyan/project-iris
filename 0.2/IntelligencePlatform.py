@@ -1,7 +1,8 @@
 import Intelligence
-import re
 import time
+from termcolor import colored
 
+# log types
 LOG_CACHE = "cache"
 LOG_CACHE_DETAIL = "cachedetail"
 LOG_CONCEPT_PARSE = "conceptparse"
@@ -11,6 +12,18 @@ LOG_EXECUTION = "execution"
 LOG_TIMING = "timing"
 LOG_ERROR = "error"
 LOG_PLATFORM = "platform"
+
+# log colors
+LOG_CACHE_COLOR = "red"
+LOG_CACHE_DETAIL_COLOR = "red"
+LOG_CONCEPT_PARSE_COLOR = "blue"
+LOG_INTELLIGENCE_COLOR = "yellow"
+LOG_SYNTAX_COLOR = "green"
+LOG_EXECUTION_COLOR = "magenta"
+LOG_TIMING_COLOR = "cyan"
+LOG_ERROR_COLOR = "white"
+LOG_PLATFORM_COLOR = "white"
+
 
 class IntelligencePlatform:
 
@@ -254,31 +267,31 @@ class IntelligencePlatform:
             
     def Log(self, msg, level = "default"):
         if level == LOG_CACHE and self.logCacheOn: 
-            print(msg)
+            print(colored(str(msg), LOG_CACHE_COLOR))
             return
         elif level == LOG_CACHE_DETAIL and self.logCacheDetailOn:
-            print(msg)
+            print(colored(str(msg), LOG_CACHE_DETAIL_COLOR))
             return
         elif level == LOG_CONCEPT_PARSE and self.logConceptParseOn:
-            print(msg)
+            print(colored(str(msg), LOG_CONCEPT_PARSE_COLOR))
             return
         elif level == LOG_INTELLIGENCE and self.logIntelligenceOn:
-            print(msg)
+            print(colored(str(msg), LOG_INTELLIGENCE_COLOR))
             return
         elif level == LOG_SYNTAX and self.logSyntaxOn:
-            print(msg)
+            print(colored(str(msg), LOG_SYNTAX_COLOR))
             return
         elif level == LOG_EXECUTION and self.logExecutionOn:
-            print(msg)
+            print(colored(str(msg), LOG_EXECUTION_COLOR))
             return
         elif level == LOG_TIMING and self.logTimingOn:
-            print(msg)
+            print(colored(str(msg), LOG_TIMING_COLOR))
             return
         elif level == LOG_ERROR and self.logErrorOn:
-            print(msg)
+            print(colored(str(msg), LOG_ERROR_COLOR))
             return
         elif level == LOG_PLATFORM and self.logPlatformOn:
-            print(msg)
+            print(colored(str(msg), LOG_PLATFORM_COLOR))
             return
         elif level == "default":
             print(msg)
