@@ -17,24 +17,28 @@ class Intelligence:
             #"self":"[print [value (print)]]",
             
             #"self":"[set (THING) \"thing\"][print [value (THING)]]",
-            "self":"[print [value [runvalue (memory)]]]",
+            #"self":"[print [value [runvalue (memory)]]]",
+            #"self":"[print [runvalue (memory)]]]",
+            "self":"[set (THING (THING1)) \"yes\"][print [value (THING (THING1))]]",
 
             "mutate":"",
             "query":"",
             "remember":"",
             "recall":"",
             #"memory":"[python \"self.CacheStore(self.entity.Memory, -2)\"]",
-            "memory":"[return (print)]",
-            #"print":"[python \"print(self.CacheRetrieve(0))\"]",
-            "print":"[python \"print(self.CacheRetrieve(0, -1))\"]",
 
+            # CORE CONCEPTS
             "value":"[python \"self.CacheStore(eval(self.CacheRetrieve(0, -1)), -2)\"]",
             "argument":"[python \"self.CacheStore(self.CacheRetrieve(0, -3), -2)\"]",
             "return":"[python \"self.CacheStore(self.CacheRetrieve(0, -1), -3)\"]",
             "set":"[python \"exec(self.CacheRetrieve(0, -1) + \" = \" + self.CacheRetrieve(1, -1))\"]",
             "run":"[python \"self.RunConceptExecute(self.CacheRetrieve(0, -1))\"]",
+            "print":"[python \"print(self.CacheRetrieve(0, -1))\"]",
 
 
+            # TESTING CONCEPTS
+
+            #"runvalue":"[set (TEMP) [argument]][return [run [value (TEMP)]]]",
             "runvalue":"[set (TEMP) [argument]][return [run [value (TEMP)]]]",
 
 
@@ -43,7 +47,7 @@ class Intelligence:
                 "a":"hello world!!!!",
                 "b":"I'M ANOTHER THING!!"
                 },
-
+            "memory":"[return (print)]",
             "test":"[return (memory)]"
             }
 

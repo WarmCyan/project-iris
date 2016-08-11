@@ -15,7 +15,7 @@ LOG_PLATFORM = "platform"
 
 # log colors
 LOG_CACHE_COLOR = "red"
-LOG_CACHE_DETAIL_COLOR = "red"
+LOG_CACHE_DETAIL_COLOR = "white"
 LOG_CONCEPT_PARSE_COLOR = "blue"
 LOG_INTELLIGENCE_COLOR = "yellow"
 LOG_SYNTAX_COLOR = "green"
@@ -147,6 +147,13 @@ class IntelligencePlatform:
             self.Log(indent + "[" + str(self.level) + "](getting argument '" + str(conceptList[0][1]) + "')", LOG_EXECUTION)
             self.level += 1
             self.timeStack.append(time.clock()) # TIMING
+
+            # make sure thing actually exists
+            try:
+                eval(reference)
+            except:
+                exec(reference + " = {}")
+            
             reference += self.RunConceptGet(conceptList[0][1][0], True)
             runTime = (time.clock() - self.timeStack.pop()) * 1000
             self.level -= 1
@@ -155,8 +162,12 @@ class IntelligencePlatform:
             
         if not multiLevel: self.CacheStore(reference)
         else: return reference
-        
-        #self.CacheStore("self.entity.Memory[\"" + conceptName + "\"]")
+
+        # make sure that which the reference refers to exists
+        #startIndex = 0
+        #for i in range(0, reference.count["["] - 1):
+            #startIndex = reference.find("[", startIndex)
+            #endIndex = 
         
 
     def RunConceptExecute(self, conceptString):
@@ -202,7 +213,7 @@ class IntelligencePlatform:
 
                 # literal argument (but not for the python!!!)
                 if argument.startswith("\"") and concept[0] != "python":
-                    self.Log(indent + "[" + str(self.level) + "](storing literal argument " + argument + ")")
+                    self.Log(indent + "[" + str(self.level) + "](storing literal argument " + argument + ")", LOG_EXECUTION)
                     self.CacheStore(argument, 0)
 
                 self.argNum[self.level] += 1
