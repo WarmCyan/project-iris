@@ -129,7 +129,7 @@ class IntelligencePlatform:
             indent += "    "
         return indent
 
-    def RunConceptGet(self, conceptString, multiLevel = False):
+    def RunConceptGet(self, conceptString, multiLevel = False, preConstructedString = ""):
         self.Log("Intelligence:" + conceptString, LOG_INTELLIGENCE)
         indent = self.GetLevelIndent(self.level)
         self.Log(indent + "LEVEL: " + str(self.level), LOG_SYNTAX)
@@ -150,11 +150,13 @@ class IntelligencePlatform:
 
             # make sure thing actually exists
             try:
-                eval(reference)
+                #self.Log("=============== evaluating '" + str(preConstructedString + reference) + "' ==================") # DEBUG
+                eval(preConstructedString + reference)
             except:
-                exec(reference + " = {}")
+                #self.Log("----------------- creating '" + str(preConstructedString + reference) + "' -----------------------") # DEBUG
+                exec(preConstructedString + reference + " = {}")
             
-            reference += self.RunConceptGet(conceptList[0][1][0], True)
+            reference += self.RunConceptGet(conceptList[0][1][0], True, str(preConstructedString + reference))
             runTime = (time.clock() - self.timeStack.pop()) * 1000
             self.level -= 1
             
