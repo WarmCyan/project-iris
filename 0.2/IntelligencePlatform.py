@@ -47,8 +47,6 @@ class IntelligencePlatform:
     logErrorOn = True
     logPlatformOn = True
 
-
-
     entity = None
             
     level = 0
@@ -95,7 +93,7 @@ class IntelligencePlatform:
             elif character == "\\": 
                 ESCAPE = True 
                 continue
-            elif character == "\"" and not ESCAPE:
+            elif (character == "\"" or character == "'") and not ESCAPE:
                 if quoteLevel == 0: quoteLevel += 1
                 elif quoteLevel == 1: quoteLevel -= 1
             elif character == " ": recordingConcept = False
@@ -128,6 +126,13 @@ class IntelligencePlatform:
         for i in range(0, level):
             indent += "    "
         return indent
+
+    # gets the part within brackets of the reference
+    def GetReferenceName(self, reference):
+        conceptStartIndex = reference.find("\"", 0) + 1
+        conceptEndIndex = reference.find("\"", conceptStartIndex)
+
+        return reference[conceptStartIndex:conceptEndIndex]
 
     def RunConceptGet(self, conceptString, multiLevel = False, preConstructedString = ""):
         self.Log("Intelligence:" + conceptString, LOG_INTELLIGENCE)
@@ -164,12 +169,6 @@ class IntelligencePlatform:
             
         if not multiLevel: self.CacheStore(reference)
         else: return reference
-
-        # make sure that which the reference refers to exists
-        #startIndex = 0
-        #for i in range(0, reference.count["["] - 1):
-            #startIndex = reference.find("[", startIndex)
-            #endIndex = 
         
 
     def RunConceptExecute(self, conceptString):
@@ -311,3 +310,11 @@ class IntelligencePlatform:
             return
         else:
             return
+
+#def getReferenceName(reference):
+    #conceptStartIndex = reference.find("\"", 0)
+    #conceptEndIndex = reference.find("\"", conceptStartIndex + 1)
+    #print(conceptStartIndex)
+    #print(conceptEndIndex)
+
+    #return reference[conceptStartIndex+1:conceptEndIndex]

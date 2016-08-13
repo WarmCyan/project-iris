@@ -20,8 +20,19 @@ class Intelligence:
             #"self":"[print [value [runvalue (memory)]]]",
             #"self":"[print [runvalue (memory)]]]",
             #"self":"[set (THING (THING1)) \"yes\"][print [value (THING (THING1))]]",
-            "self":"[set (THING (THING1 (THING3))) (self)][print [value (THING (THING1 (THING3)))]]",
+            #"self":"[set (THING (THING1 (THING3))) (self)][print [value (THING (THING1 (THING3)))]]",
+            
+            #"self":"[print [concept (self)]]",
+            #"self":"[print [runnable [concept (self)] [runnable [concept (mutate)]]]]",
+            #"self":"[print [runnable [concept (mutate)] [referable [concept (self)]]]]",
+            #"self":"[print [runnable \"YEAH\"]]", # TODO: THIS DOESN'T WORK. MAKE THIS WORK.
 
+            #"self":"[print [run [runnable [concept (test)]]]]", # TODO: THIS DOESN'T WORK, (because of extra level), unsure if this SHOULD work or not
+
+            "self":"[set (THING) [quotable [runnable [concept (mutate)] [referable [concept (self)]]]]][print [value (THING)]]", 
+            #"self":"[print [quotable [concept (self)]]]",
+
+            
             "mutate":"",
             "query":"",
             "remember":"",
@@ -33,14 +44,25 @@ class Intelligence:
             "argument":"[python \"self.CacheStore(self.CacheRetrieve(0, -3), -2)\"]",
             "return":"[python \"self.CacheStore(self.CacheRetrieve(0, -1), -3)\"]",
             "set":"[python \"exec(self.CacheRetrieve(0, -1) + \" = \" + self.CacheRetrieve(1, -1))\"]",
-            "run":"[python \"self.RunConceptExecute(self.CacheRetrieve(0, -1))\"]",
+            "run":"[python \"self.RunConceptExecute(self.CacheRetrieve(0, -1))\"]", # runs quoted syntax
             "print":"[python \"print(self.CacheRetrieve(0, -1))\"]",
+
+            # META CORE
+            "concept":"[python \"self.CacheStore(self.GetReferenceName(self.CacheRetrieve(0, -1)), -2)\"]", # gets the the name of the concept of a reference
+            #"runnable":"[python \"self.CacheStore(\\\"[\\\" + self.CacheRetrieve(0, -1) + \\\"]\\\", -2)\"]", # TODO: need to expand this to be able to construct arguments as well (2nd argument could be the argument string, so we get the same functional structyure thing
+
+            "runnable":"[python \"if self.CacheRetrieve(1, -1) == None:\n\tself.CacheStore(\\\"[\\\" + self.CacheRetrieve(0, -1) + \\\"]\\\", -2)\nelse:\n\tself.CacheStore(\\\"[\\\" + self.CacheRetrieve(0, -1) + \\\" \\\" + self.CacheRetrieve(1, -1) + \\\"]\\\", -2)\"]",
+
+            "referable":"[python \"if self.CacheRetrieve(1, -1) == None:\n\tself.CacheStore(\\\"(\\\" + self.CacheRetrieve(0, -1) + \\\")\\\", -2)\nelse:\n\tself.CacheStore(\\\"(\\\" + self.CacheRetrieve(0, -1) + \\\" \\\" + self.CacheRetrieve(1, -1) + \\\")\\\", -2)\"]",
+
+            "quotable":"[python \"self.CacheStore(\\\"'\\\" + self.CacheRetrieve(0, -1) + \\\"'\\\", -2)\"]",
 
 
             # TESTING CONCEPTS
 
             #"runvalue":"[set (TEMP) [argument]][return [run [value (TEMP)]]]",
             "runvalue":"[set (TEMP) [argument]][return [run [value (TEMP)]]]",
+            "printsafe":"[python \"print(\\\"Hello world!\\\")\"]",
 
 
             "approval":"0",
@@ -52,53 +74,6 @@ class Intelligence:
             "test":"[return (memory)]"
             }
 
-
-    # 2: [print "THING"] //thing is arg level 2
-    # 3: [python etc etc, needs to get level above it
-
-
-# issue:
-#
-# need to be able to EXECUTE concepts 
-# need to be able to GET THE CONTENT of concepts 
-# need to be able to GET THE REFERENCE to concepts
-
-# [] can execute executable concepts
-# () gets the content of concepts
-# {} gets a reference to concepts (self.entity.Memory["KEY"])
-
-
-# questions:
-# [] for nonexecutable concepts? Same as ()?
-
-
-
-# instead:
-# () gets a reference to concepts, and {} gets a literal to it in the very rare
-# instances it's necessary?
-
-# NOTE: if you have a QUOTED REFERENCE TO SOMETHING, you can get the VALUE of
-# that something with 
-# eval(referenceString)
-#
-# you can SET the value of that REFERENCE by using 
-# exec(referenceString + " = [VALUE]")
-
-
-
-# (self) stores "self.entity.Memory["self"]" in the cache
-
-
-# [set (recall) (memory)]
-
-# (recall)
-#   () tell platform to store "self.entity.Memory["recall"]" in cache 0
-#
-# (memory)
-#   () tell platform to store "self.entity.Memory["memory"]" in cache 1
-#
-# [set]
-#   [python "exec(
 
 
     def TestReferences(self):
