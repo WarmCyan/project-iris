@@ -311,10 +311,3 @@ class IntelligencePlatform:
         else:
             return
 
-#def getReferenceName(reference):
-    #conceptStartIndex = reference.find("\"", 0)
-    #conceptEndIndex = reference.find("\"", conceptStartIndex + 1)
-    #print(conceptStartIndex)
-    #print(conceptEndIndex)
-
-    #return reference[conceptStartIndex+1:conceptEndIndex]

@@ -1,4 +1,3 @@
-
 class Intelligence:
 
     Memory = {
@@ -32,11 +31,13 @@ class Intelligence:
             #"self":"[print [run [value [run [value [run [runnable [concept (return)] [referable [concept (test)]]]]]]]]]",
 
 
-            "self":"[print [value [run [value [run [value [run [runnable [concept (return)] [referable [concept (test)]]]]]]]]]]", # FREAKING 11 LEVELS DEEP
+            #"self":"[print [value [run [value [run [value [run [runnable [concept (return)] [referable [concept (test)]]]]]]]]]]", # FREAKING 11 LEVELS DEEP
 
 
             #"self":"[set (THING) [quotable [runnable [concept (mutate)] [referable [concept (self)]]]]][print [value (THING)]]", # NOTE: amazing meta powers ACTIVATE!!!!!!!!!!!!!!!
             #"self":"[print [quotable [concept (self)]]]",
+
+            "self":"[print [currentdepth]]",
 
             
             "mutate":"",
@@ -62,6 +63,15 @@ class Intelligence:
             "referable":"[python \"if self.CacheRetrieve(1, -1) == None:\n\tself.CacheStore(\\\"(\\\" + self.CacheRetrieve(0, -1) + \\\")\\\", -2)\nelse:\n\tself.CacheStore(\\\"(\\\" + self.CacheRetrieve(0, -1) + \\\" \\\" + self.CacheRetrieve(1, -1) + \\\")\\\", -2)\"]",
 
             "quotable":"[python \"self.CacheStore(\\\"'\\\" + self.CacheRetrieve(0, -1) + \\\"'\\\", -2)\"]",
+
+
+
+            # concept map testing 
+            "connection":"",
+            "searchdepth":"",
+            "currentdepth":"[python \"self.CacheStore(self.level - 1, -2)\"]", # this returns the level of the CONCEPT THAT CALLED IT
+            
+            #"concept1":"
 
 
             # TESTING CONCEPTS
