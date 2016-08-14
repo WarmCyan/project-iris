@@ -37,7 +37,8 @@ class Intelligence:
             #"self":"[set (THING) [quotable [runnable [concept (mutate)] [referable [concept (self)]]]]][print [value (THING)]]", # NOTE: amazing meta powers ACTIVATE!!!!!!!!!!!!!!!
             #"self":"[print [quotable [concept (self)]]]",
 
-            "self":"[print [currentdepth]]",
+            #"self":"[set (INPUT) [quotable [getinput]]][print [value (INPUT)]]",
+            "self":"[set (INPUT) [quotable [getinput]]][set [run [runnable [concept (return)] [referable [value (INPUT)]]]] [quotable [runnable [concept (print)] [referable [concept (Nathan)]]]]][print [value (Nathan)]]",
 
             
             "mutate":"",
@@ -53,6 +54,7 @@ class Intelligence:
             "set":"[python \"exec(self.CacheRetrieve(0, -1) + \" = \" + self.CacheRetrieve(1, -1))\"]",
             "run":"[python \"self.RunConceptExecute(self.CacheRetrieve(0, -1))\"]", # runs quoted syntax
             "print":"[python \"print(self.CacheRetrieve(0, -1))\"]",
+            "getinput":"[python \"self.CacheStore(raw_input('Intelligence requested input: '), -2)\"]",
 
             # META CORE
             "concept":"[python \"self.CacheStore(self.GetReferenceName(self.CacheRetrieve(0, -1)), -2)\"]", # gets the the name of the concept of a reference
@@ -66,10 +68,13 @@ class Intelligence:
 
 
 
+            # future concepts:
+            # break concept (stops current concept)
+
+
             # concept map testing 
             "connection":"",
-            "searchdepth":"",
-            "currentdepth":"[python \"self.CacheStore(self.level - 1, -2)\"]", # this returns the level of the CONCEPT THAT CALLED IT
+            "depth":"[python \"self.CacheStore(self.level - 1, -2)\"]", # this returns the level of the CONCEPT THAT CALLED IT
             
             #"concept1":"
 
