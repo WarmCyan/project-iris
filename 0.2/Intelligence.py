@@ -38,10 +38,21 @@ class Intelligence:
             #"self":"[print [quotable [concept (self)]]]",
 
             #"self":"[set (INPUT) [quotable [getinput]]][print [value (INPUT)]]",
-            "self":"[set (INPUT) [quotable [getinput]]][set [run [runnable [concept (return)] [referable [value (INPUT)]]]] [quotable [runnable [concept (print)] [referable [concept (Nathan)]]]]][print [value (Nathan)]]",
+            #"self":"[set (INPUT) [quotable [getinput]]][set [run [runnable [concept (return)] [referable [value (INPUT)]]]] [quotable [runnable [concept (print)] [referable [concept (Nathan)]]]]][print [value (Nathan)]]",
+
+            "self":"[print [value (runvalue)]]",
+
+
+            # mutate needs:
+            #   1. List concepts
+            #   2. Choose one randomly
+            #   3. Get self string, 
+            #   4. Get all base and first level concepts
+            #   5. Randomly choose one to modify with the self string
+
 
             
-            "mutate":"",
+            "mutate":"", # theoretically, this needs some kind of way to list all the available concepts.
             "query":"",
             "remember":"",
             "recall":"",
@@ -76,9 +87,6 @@ class Intelligence:
             "connection":"",
             "depth":"[python \"self.CacheStore(self.level - 1, -2)\"]", # this returns the level of the CONCEPT THAT CALLED IT
             
-            #"concept1":"
-
-
             # TESTING CONCEPTS
 
             #"runvalue":"[set (TEMP) [argument]][return [run [value (TEMP)]]]",

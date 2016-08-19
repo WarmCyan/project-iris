@@ -62,9 +62,6 @@ class IntelligencePlatform:
     def StartLife(self):
         self.Log("Starting life...\n", LOG_PLATFORM)
         self.RunConceptExecute("[self]")
-        #self.RunConceptExecute("[print [memory]]")
-
-        #print(self.ParseConcepts("(thingy (MOARTHINGY))"))
 
     # get the concepts and arguments from a string   
     def ParseConcepts(self, conceptString, indent = ""):
