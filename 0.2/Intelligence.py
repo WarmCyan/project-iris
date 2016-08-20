@@ -45,8 +45,9 @@ class Intelligence:
 
             #"self":"[print [count [count [count [count [count]]]]]]",
 
+            "self":"[print [test2 \"hello world!\" \"Idk why you say hello, I say goodbye\"]]",
+
             
-            "count":"[python \"if self.CacheRetrieve(0, -1) == None:\n\tself.CacheStore(int(0), -2)\nelse:\n\tself.CacheStore(eval('1+int(self.CacheRetrieve(0, -1))'), -2)\"]", # meta concept to potentially keep!
 
 
             # mutate needs:
@@ -66,12 +67,17 @@ class Intelligence:
 
             # CORE CONCEPTS
             "value":"[python \"self.CacheStore(eval(self.CacheRetrieve(0, -1)), -2)\"]",
-            "argument":"[python \"self.CacheStore(self.CacheRetrieve(0, -3), -2)\"]",
+            #"argument":"[python \"self.CacheStore(self.CacheRetrieve(0, -3), -2)\"]",
             "return":"[python \"self.CacheStore(self.CacheRetrieve(0, -1), -3)\"]",
             "set":"[python \"exec(self.CacheRetrieve(0, -1) + \" = \" + self.CacheRetrieve(1, -1))\"]",
             "run":"[python \"self.RunConceptExecute(self.CacheRetrieve(0, -1))\"]", # runs quoted syntax
             "print":"[python \"print(self.CacheRetrieve(0, -1))\"]",
             "getinput":"[python \"self.CacheStore(raw_input('Intelligence requested input: '), -2)\"]",
+            "count":"[python \"if self.CacheRetrieve(0, -1) == None:\n\tself.CacheStore(int(0), -2)\nelse:\n\tself.CacheStore(eval('1+int(self.CacheRetrieve(0, -1))'), -2)\"]", # meta concept to potentially keep!
+            "argument":"[python \"if self.CacheRetrieve(0, -1) == None:\n\tself.CacheStore(self.CacheRetrieve(0, -3), -2)\nelse:\n\tself.CacheStore(self.CacheRetrieve(int(self.CacheRetrieve(0, -1)), -3), -2)\"]",
+
+
+            
 
             # META CORE
             "concept":"[python \"self.CacheStore(self.GetReferenceName(self.CacheRetrieve(0, -1)), -2)\"]", # gets the the name of the concept of a reference
@@ -106,7 +112,9 @@ class Intelligence:
                 "b":"I'M ANOTHER THING!!"
                 },
             "memory":"[return (print)]",
-            "test":"[return (memory)]"
+            "test":"[return (memory)]",
+
+            "test2":"[set (TEMP) [argument [count [count]]]][return [quotable [value (TEMP)]]]"
             }
 
 
