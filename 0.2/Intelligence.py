@@ -40,7 +40,13 @@ class Intelligence:
             #"self":"[set (INPUT) [quotable [getinput]]][print [value (INPUT)]]",
             #"self":"[set (INPUT) [quotable [getinput]]][set [run [runnable [concept (return)] [referable [value (INPUT)]]]] [quotable [runnable [concept (print)] [referable [concept (Nathan)]]]]][print [value (Nathan)]]",
 
-            "self":"[print [value (runvalue)]]",
+            #"self":"[print [value (runvalue)]]",
+            #"self":"[print [runnable [concept (return)] [referable [concept (levelOne)] [referable [concept (levelTow)]]]]]",
+
+            #"self":"[print [count [count [count [count [count]]]]]]",
+
+            
+            "count":"[python \"if self.CacheRetrieve(0, -1) == None:\n\tself.CacheStore(int(0), -2)\nelse:\n\tself.CacheStore(eval('1+int(self.CacheRetrieve(0, -1))'), -2)\"]", # meta concept to potentially keep!
 
 
             # mutate needs:
