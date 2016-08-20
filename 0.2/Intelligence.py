@@ -63,11 +63,9 @@ class Intelligence:
             "query":"",
             "remember":"",
             "recall":"",
-            #"memory":"[python \"self.CacheStore(self.entity.Memory, -2)\"]",
 
             # CORE CONCEPTS
             "value":"[python \"self.CacheStore(eval(self.CacheRetrieve(0, -1)), -2)\"]",
-            #"argument":"[python \"self.CacheStore(self.CacheRetrieve(0, -3), -2)\"]",
             "return":"[python \"self.CacheStore(self.CacheRetrieve(0, -1), -3)\"]",
             "set":"[python \"exec(self.CacheRetrieve(0, -1) + \" = \" + self.CacheRetrieve(1, -1))\"]",
             "run":"[python \"self.RunConceptExecute(self.CacheRetrieve(0, -1))\"]", # runs quoted syntax
@@ -76,12 +74,8 @@ class Intelligence:
             "count":"[python \"if self.CacheRetrieve(0, -1) == None:\n\tself.CacheStore(int(0), -2)\nelse:\n\tself.CacheStore(eval('1+int(self.CacheRetrieve(0, -1))'), -2)\"]", # meta concept to potentially keep!
             "argument":"[python \"if self.CacheRetrieve(0, -1) == None:\n\tself.CacheStore(self.CacheRetrieve(0, -3), -2)\nelse:\n\tself.CacheStore(self.CacheRetrieve(int(self.CacheRetrieve(0, -1)), -3), -2)\"]",
 
-
-            
-
             # META CORE
             "concept":"[python \"self.CacheStore(self.GetReferenceName(self.CacheRetrieve(0, -1)), -2)\"]", # gets the the name of the concept of a reference
-            #"runnable":"[python \"self.CacheStore(\\\"[\\\" + self.CacheRetrieve(0, -1) + \\\"]\\\", -2)\"]", # TODO: need to expand this to be able to construct arguments as well (2nd argument could be the argument string, so we get the same functional structyure thing
 
             "runnable":"[python \"if self.CacheRetrieve(1, -1) == None:\n\tself.CacheStore(\\\"[\\\" + self.CacheRetrieve(0, -1) + \\\"]\\\", -2)\nelse:\n\tself.CacheStore(\\\"[\\\" + self.CacheRetrieve(0, -1) + \\\" \\\" + self.CacheRetrieve(1, -1) + \\\"]\\\", -2)\"]",
 
@@ -89,6 +83,9 @@ class Intelligence:
 
             "quotable":"[python \"self.CacheStore(\\\"'\\\" + self.CacheRetrieve(0, -1) + \\\"'\\\", -2)\"]",
 
+            # META META CORE NOTE: these may have dependencies!
+            
+            #"map_concept":"
 
 
             # future concepts:
@@ -101,7 +98,6 @@ class Intelligence:
             
             # TESTING CONCEPTS
 
-            #"runvalue":"[set (TEMP) [argument]][return [run [value (TEMP)]]]",
             "runvalue":"[set (TEMP) [argument]][return [run [value (TEMP)]]]",
             "printsafe":"[python \"print(\\\"Hello world!\\\")\"]",
 
@@ -115,6 +111,17 @@ class Intelligence:
             "test":"[return (memory)]",
 
             "test2":"[set (TEMP) [argument [count [count]]]][return [quotable [value (TEMP)]]]"
+
+
+
+
+            # OLD CONCEPTS
+
+            #"runnable":"[python \"self.CacheStore(\\\"[\\\" + self.CacheRetrieve(0, -1) + \\\"]\\\", -2)\"]", # TODO: need to expand this to be able to construct arguments as well (2nd argument could be the argument string, so we get the same functional structyure thing
+            #"argument":"[python \"self.CacheStore(self.CacheRetrieve(0, -3), -2)\"]",
+            #"memory":"[python \"self.CacheStore(self.entity.Memory, -2)\"]",
+
+            
             }
 
 
@@ -129,3 +136,18 @@ class Intelligence:
         exec(reference + " = 14")
         print(eval(reference)) # 14
         
+
+
+
+
+# arg0: the name of the concept to map
+#
+#
+# [set (TEMP_ARG_0) [argument]][set (TEMP_MAP_CONCEPT) [value (TEMP_ARG_0)]]
+conceptList = self.ParseConcepts(self.entity.Memory["TEMP_MAP_CONCEPT"])
+self.entity.Memory["CONCEPT_MAP"] = {}
+index = 0
+for concept in conceptList:
+    indexString = str(index)
+    self.entity.Memory["CONCEPT_MAP"][indexString] = {}
+    self.entity.Memory["CONCEPT_MAP"][indexString]["concept"] = 
