@@ -1,6 +1,8 @@
 import Intelligence
 import time
 from termcolor import colored
+import os
+import json
 
 # log types
 LOG_CACHE = "cache"
@@ -48,6 +50,9 @@ class IntelligencePlatform:
     logPlatformOn = True
 
     entity = None
+    entityData = {}
+    entityDataFolderPath = ""
+    cycle = 0
             
     level = 0
     cache = []
@@ -55,13 +60,64 @@ class IntelligencePlatform:
 
     timeStack = []
 
+    continueSelf = True
+
+    #logFP = None
+
+    def CreateEntity(self):
+        # load current data
+        self.Log("Loading entity data...", LOG_PLATFORM)
+        entityFP = open("ENTITY.dat", "r")
+        self.entityData = json.load(entityFP)
+        entityFP.close()
+
+        # increment build
+        self.entityData["Build"] = str(1 + int(self.entityData["Build"])) 
+
+        # save updated
+        entityFP = open("ENTITY.dat", "w")
+        json.dump(self.entityData, entityFP)
+
+        # create new run folder
+        self.Log("Building data folder for new entity...", LOG_PLATFORM)
+        folderName = str(self.entityData["Name"]) + " " + str(self.entityData["Version"]) + "." + str(self.entityData["Build"]) + " (" + time.strftime("%y.%m.%d-%H.%M.%S") + ")"
+        self.entityDataFolderPath = "InstanceLogs/" + folderName
+        #os.makedirs("./InstanceLogs/" + folderName)
+        os.makedirs("./" + self.entityDataFolderPath)
+        self.Log("Created Folder: " + self.entityDataFolderPath) 
+
+        self.InitializeIntelligence()
+        
+
     def InitializeIntelligence(self):
         self.Log("Instantiating new intelligence instance...", LOG_PLATFORM)
         self.entity = Intelligence.Intelligence()
 
+        self.Log("----------------------------------------", LOG_PLATFORM)
+        self.Log("\t" + str(self.entityData["Name"]) + " " + str(self.entityData["Version"]), LOG_PLATFORM)
+        self.Log("\tBuild " + str(self.entityData["Build"]), LOG_PLATFORM)
+        self.Log("----------------------------------------\n", LOG_PLATFORM)
+        
+
     def StartLife(self):
         self.Log("Starting life...\n", LOG_PLATFORM)
-        self.RunConceptExecute("[self]")
+
+        while (self.continueSelf):
+            self.Log("----- CYCLE " + str(self.cycle) + " -----", LOG_PLATFORM)
+            # make a memory dump
+            self.Log("Creating cycle " + str(self.cycle) + " log file...", LOG_PLATFORM)
+            self.logFP = open(self.entityDataFolderPath + "/Cycle_" + str(self.cycle) + ".log", "w")
+
+            self.continueSelf = False # should self sustain (keep itself alive by running itself)
+            #try: self.RunConceptExecute("[self]")
+            #except:
+                #self.logFP.close()
+                #return
+            
+            self.logFP.close()
+                
+
+        #self.Log("died
 
     # get the concepts and arguments from a string   
     def ParseConcepts(self, conceptString, indent = ""):
@@ -166,6 +222,10 @@ class IntelligencePlatform:
             
         if not multiLevel: self.CacheStore(reference)
         else: return reference
+
+
+    # TODO display function that creates another log of the whole
+    # "conversation" between intelligence and user (this would be what print does)
         
 
     def RunConceptExecute(self, conceptString):
@@ -223,6 +283,11 @@ class IntelligencePlatform:
                 exec(code)
             else:
                 runstring = self.entity.Memory[concept[0]]
+
+                if runstring == "[self]":
+                    self.continueSelf = True
+                    return
+                
                 self.Log(indent + "[" + str(self.level) + "](executing concept '" + concept[0] + "')", LOG_EXECUTION)
                 self.level += 1
                 self.timeStack.append(time.clock()) # TIMING
@@ -231,6 +296,7 @@ class IntelligencePlatform:
                 self.level -= 1
                 self.Log(indent + "[" + str(self.level) + "](concept '" + concept[0] + "' execution: ......... " + str(runTime) + " ms)", LOG_TIMING)
                 self.CacheClear()
+
 
     # verifies appropriate structures exist in cache, then stores object in cache based on level
     # if for some reason trying to get a different level's cache, specify an offset

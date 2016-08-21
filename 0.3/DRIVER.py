@@ -1,10 +1,11 @@
 import IntelligencePlatform
 
-print("\n---------------- RUN ----------------\n")
+print("\n------------------------------------ RUN ------------------------------------\n")
 
 platform = IntelligencePlatform.IntelligencePlatform()
-platform.InitializeIntelligence()
+platform.CreateEntity()
+#platform.InitializeIntelligence()
 platform.StartLife()
 
-print("\n=====================================\n")
+print("\n=============================================================================\n")
 
