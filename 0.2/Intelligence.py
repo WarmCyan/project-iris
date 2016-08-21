@@ -50,10 +50,14 @@ class Intelligence:
             #"self":"[set (THING1) (self)][set_quoted (THING2) (self)][print [value (THING1)]][print [value (THING2)]]",
 
             #"self":"[map_concept [concept (self)]][print [value (TEMP_ARG_0)]][print [value (CONCEPT_MAP)]]",
+            #"self":"[map_concept [concept (self)]][print [value (TEMP_ARG_0)]]",
+            "self":"[map_concept (runvalue)][print [value (TEMP_ARG_0)]][print [value (TEMP_MAP_CONCEPT)]][print [value (CONCEPT_MAP)]]",
+
+
             #"self":"[print [value [run [runnable [concept (return) [referable [concept (self)]]]]]]]",
             #"self":"[print [value [get [referable [concept (self)]]]]]",
             #"self":"[print [get [referable [concept (self)]]]]",
-            "self":"[set_quoted (THING) [concept (self)]][print [value (THING)]]",
+            #"self":"[set_quoted (THING) [concept (self)]][print [value [get [referable [value (THING)]]]]]",
     
 
             
@@ -107,7 +111,8 @@ class Intelligence:
             
             #"map_concept":"[set (TEMP_ARG_0) [argument]][set (TEMP_MAP_CONCEPT) [value [value (TEMP_ARG_0)]]]",
             #"map_concept":"[set (TEMP_ARG_0) [argument]][set (TEMP_MAP_CONCEPT) [quotable [value (TEMP_ARG_0)]]]",
-            "map_concept":"[set_quoted (TEMP_ARG_0) [argument]][set (TEMP_MAP_CONCEPT) [quotable [value (TEMP_ARG_0)]]]",
+            #"map_concept":"[set_quoted (TEMP_ARG_0) [argument]][set (TEMP_MAP_CONCEPT) [quotable [value (TEMP_ARG_0)]]]",
+            "map_concept":"[set_quoted (TEMP_ARG_0) [argument]][set (TEMP_MAP_CONCEPT) [value (TEMP_ARG_0)]][python \"self.METAMapConcept()\"]",
 
 
             # future concepts:

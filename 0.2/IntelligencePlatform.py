@@ -310,14 +310,18 @@ class IntelligencePlatform:
 
 
     # TODO: logically this should be in the concept itself, but slower?
+    # TEMP_ARG_0 is the REFERENCE to the desired concept NOTE: this shouldn't
+    # even be used!!!!!!!!!
+    # TEMP_MAP_CONCEPT is the VALUE of that concept
     def METAMapConcept(self):
         conceptList = self.ParseConcepts(self.entity.Memory["TEMP_MAP_CONCEPT"])
         self.entity.Memory["CONCEPT_MAP"] = {}
-        index = 0
+        index = -1
         for concept in conceptList:
+            index += 1
             indexString = str(index)
             self.entity.Memory["CONCEPT_MAP"][indexString] = {}
-            self.entity.Memory["CONCEPT_MAP"][indexString]["concept"] = self.entity.Memory["TEMP_ARG_0"] # the argument, which should be the name of the concept
+            self.entity.Memory["CONCEPT_MAP"][indexString]["concept"] = concept[0]
 
             # create a straight string of the args TODO: maybe later find a way to make
             # this a recursive structure like it would be anyway?
