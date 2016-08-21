@@ -29,30 +29,18 @@ LOG_ERROR_COLOR = "red"
 LOG_PLATFORM_COLOR = "white"
 LOG_DIALOG_COLOR = "white"
 
-
+logCacheOn = True
+logCacheDetailOn = True
+logConceptParseOn = True
+logIntelligenceOn = True
+logSyntaxOn = True
+logExecutionOn = True
+logTimingOn = True
+logErrorOn = True
+logPlatformOn = True
+logDialogOn = True
+    
 class IntelligencePlatform:
-
-
-    # LOG TYPES:
-    # cache - status messages about when cache is being accessed
-    # cachedetail - prints what's being put into cache 
-    # conceptparse - status and results of concept parsing
-    # intelligence - strings intelligence is passing to platform
-    # syntax - granular information about syntax parsing and what's being executed
-    # error - any error messages
-    # platform - platform messages
-
-    logCacheOn = True
-    logCacheDetailOn = True
-    logConceptParseOn = True
-    logIntelligenceOn = True
-    logSyntaxOn = True
-    logExecutionOn = True
-    logTimingOn = True
-    logErrorOn = True
-    logPlatformOn = True
-    logDialogOn = True
-
     entity = None
     entityData = {}
     entityDataFolderPath = ""
@@ -68,6 +56,9 @@ class IntelligencePlatform:
 
     logFP = None
     platformLogFP = None
+
+    # non kill-safe functions (allow even if kill-safe has been activated)
+    safeFunctions = ['Log', 'platformLogFP', 'logFP', 'entityData', 'safeFunctions']
 
     def CreateEntity(self):
         # load current data
@@ -150,29 +141,29 @@ class IntelligencePlatform:
     def KILL(self):
         self.Log("Safely corrupting and deleting entity...", LOG_PLATFORM)
         self.level = -100
+        for concept in self.entity.Memory:
+            self.entity.Memory[concept] = None
         self.entity.Memory = None
         delattr(IntelligencePlatform, "entity")
         delattr(IntelligencePlatform, "cache")
 
-        self.Log("Activating fail safe kill switch...")
-        self.RunConceptGet = self.FAIL_SAFE
-        self.RunConceptExecute = self.FAIL_SAFE
-        self.CacheStore = self.FAIL_SAFE
-        self.CacheRetrieve = self.FAIL_SAFE
-        self.CreateEntity = self.FAIL_SAFE
-        self.InitializeIntelligence = self.FAIL_SAFE
-        self.METAMapConcept = self.FAIL_SAFE
-        self.ParseConcepts = self.FAIL_SAFE
-
+        self.Log("Activating fail safe kill switch...", LOG_PLATFORM)
+        attributes = dir(self)
+        for attribute in attributes:
+            if str(attribute) not in self.safeFunctions: 
+                setattr(self, attribute, self.FAIL_SAFE)
         gc.collect();
-
-        self.RunConceptGet()
+        self.Log("Entity deleted", LOG_PLATFORM)
 
     def FAIL_SAFE(self):
-        self.Log("_FAIL_SAFE_ - KILL SWITCH WAS THROWN. FUNCTION CALL BLOCKED.", LOG_PLATFORM)
-        self.Log("_FAIL_SAFE_ - FORCING PROGRAM STOP.", LOG_PLATFORM)
-        delattr(IntelligencePlatform, "FAIL_SAFE")
-        gc.collect()
+        print("_FAIL_SAFE_ - BLOCKED ATTEMPTED ACCESS ON ATTRIBUTE AFTER KILL SWITCH WAS THROWN.")
+        print("_FAIL_SAFE_ - CORRUPTING ALL REMAINING FUNCTIONS...")
+        attributes = dir(self)
+        for attribute in attributes:
+            print("\tDELETING '" + attribute + "'...")
+            try: delattr(IntelligencePlatform, attribute)
+            except AttributeError: print("\tNOTICE - '" + attribute + "' ALREADY NONEXISTANT")
+        print("_FAIL_SAFE_ - FORCING PROGRAM STOP.")
         exit()
 
     def DumpMemory(self, initial = False):
@@ -420,34 +411,34 @@ class IntelligencePlatform:
         if self.logFP != None: self.logFP.write(msg + "\n")
         if self.platformLogFP != None and (level == LOG_PLATFORM or level == LOG_ERROR or level == LOG_DIALOG): self.platformLogFP.write(msg + "\n")
         
-        if level == LOG_CACHE and self.logCacheOn: 
+        if level == LOG_CACHE and logCacheOn: 
             print(colored(str(msg), LOG_CACHE_COLOR))
             return
-        elif level == LOG_CACHE_DETAIL and self.logCacheDetailOn:
+        elif level == LOG_CACHE_DETAIL and logCacheDetailOn:
             print(colored(str(msg), LOG_CACHE_DETAIL_COLOR))
             return
-        elif level == LOG_CONCEPT_PARSE and self.logConceptParseOn:
+        elif level == LOG_CONCEPT_PARSE and logConceptParseOn:
             print(colored(str(msg), LOG_CONCEPT_PARSE_COLOR))
             return
-        elif level == LOG_INTELLIGENCE and self.logIntelligenceOn:
+        elif level == LOG_INTELLIGENCE and logIntelligenceOn:
             print(colored(str(msg), LOG_INTELLIGENCE_COLOR))
             return
-        elif level == LOG_SYNTAX and self.logSyntaxOn:
+        elif level == LOG_SYNTAX and logSyntaxOn:
             print(colored(str(msg), LOG_SYNTAX_COLOR))
             return
-        elif level == LOG_EXECUTION and self.logExecutionOn:
+        elif level == LOG_EXECUTION and logExecutionOn:
             print(colored(str(msg), LOG_EXECUTION_COLOR))
             return
-        elif level == LOG_TIMING and self.logTimingOn:
+        elif level == LOG_TIMING and logTimingOn:
             print(colored(str(msg), LOG_TIMING_COLOR))
             return
-        elif level == LOG_ERROR and self.logErrorOn:
+        elif level == LOG_ERROR and logErrorOn:
             print(colored(str(msg), LOG_ERROR_COLOR))
             return
-        elif level == LOG_PLATFORM and self.logPlatformOn:
+        elif level == LOG_PLATFORM and logPlatformOn:
             print(colored(str(msg), LOG_PLATFORM_COLOR))
             return
-        elif level == LOG_DIALOG and self.logDialogOn:
+        elif level == LOG_DIALOG and logDialogOn:
             print(colored(str(msg), LOG_DIALOG_COLOR))
             return
         elif level == "default":
