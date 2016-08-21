@@ -52,7 +52,8 @@ class Intelligence:
             #"self":"[map_concept [concept (self)]][print [value (TEMP_ARG_0)]][print [value (CONCEPT_MAP)]]",
             #"self":"[print [value [run [runnable [concept (return) [referable [concept (self)]]]]]]]",
             #"self":"[print [value [get [referable [concept (self)]]]]]",
-            "self":"[print [get [referable [concept (self)]]]]",
+            #"self":"[print [get [referable [concept (self)]]]]",
+            "self":"[set_quoted (THING) [concept (self)]][print [value (THING)]]",
     
 
             
