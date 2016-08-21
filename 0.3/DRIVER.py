@@ -4,8 +4,8 @@ print("\n------------------------------------ RUN ------------------------------
 
 platform = IntelligencePlatform.IntelligencePlatform()
 platform.CreateEntity()
-#platform.InitializeIntelligence()
-platform.StartLife()
+#platform.StartLife()
+platform.KILL()
 
 print("\n=============================================================================\n")
 

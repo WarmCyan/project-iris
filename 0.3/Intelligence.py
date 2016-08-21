@@ -37,7 +37,7 @@ class Intelligence:
             #"self":"[set (THING) [quotable [runnable [concept (mutate)] [referable [concept (self)]]]]][print [value (THING)]]", # NOTE: amazing meta powers ACTIVATE!!!!!!!!!!!!!!!
             #"self":"[print [quotable [concept (self)]]]",
 
-            #"self":"[set (INPUT) [quotable [getinput]]][print [value (INPUT)]]",
+            "self":"[set (INPUT) [quotable [getinput]]][print [value (INPUT)]]",
             #"self":"[set (INPUT) [quotable [getinput]]][set [run [runnable [concept (return)] [referable [value (INPUT)]]]] [quotable [runnable [concept (print)] [referable [concept (Nathan)]]]]][print [value (Nathan)]]",
 
             #"self":"[print [value (runvalue)]]",
@@ -52,7 +52,7 @@ class Intelligence:
             #"self":"[map_concept [concept (self)]][print [value (TEMP_ARG_0)]][print [value (CONCEPT_MAP)]]",
             #"self":"[map_concept [concept (self)]][print [value (TEMP_ARG_0)]]",
             #"self":"[map_concept (runvalue)][print [value (TEMP_ARG_0)]][print [value (TEMP_MAP_CONCEPT)]][print [value (CONCEPT_MAP)]]",
-            "self":"[map_concept (runvalue) (ZECONCEPT)][print [value (ZECONCEPT)]]",
+            #"self":"[map_concept (runvalue) (ZECONCEPT)][print [value (ZECONCEPT)]]",
 
 
             #"self":"[print [value [run [runnable [concept (return) [referable [concept (self)]]]]]]]",
@@ -94,8 +94,10 @@ class Intelligence:
             "get":"[python \"self.RunConceptGet(self.CacheRetrieve(0, -1));self.CacheStore(self.CacheRetrieve(1, -1), -2)\"]",
 
             "run":"[python \"self.RunConceptExecute(self.CacheRetrieve(0, -1))\"]", # runs quoted syntax
-            "print":"[python \"print(self.CacheRetrieve(0, -1))\"]",
-            "getinput":"[python \"self.CacheStore(raw_input('Intelligence requested input: '), -2)\"]",
+            #"print":"[python \"print(self.CacheRetrieve(0, -1))\"]",
+            "print":"[python \"self.Display(str(self.CacheRetrieve(0, -1)))\"]",
+            #"getinput":"[python \"self.CacheStore(raw_input('Intelligence requested input: '), -2)\"]",
+            "getinput":"[python \"self.CacheStore(self.GetInput(), -2)\"]",
             "count":"[python \"if self.CacheRetrieve(0, -1) == None:\n\tself.CacheStore(int(0), -2)\nelse:\n\tself.CacheStore(eval('1+int(self.CacheRetrieve(0, -1))'), -2)\"]", # meta concept to potentially keep!
             "argument":"[python \"if self.CacheRetrieve(0, -1) == None:\n\tself.CacheStore(self.CacheRetrieve(0, -3), -2)\nelse:\n\tself.CacheStore(self.CacheRetrieve(int(self.CacheRetrieve(0, -1)), -3), -2)\"]",
 
