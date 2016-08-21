@@ -45,9 +45,22 @@ class Intelligence:
 
             #"self":"[print [count [count [count [count [count]]]]]]",
 
-            "self":"[print [test2 \"hello world!\" \"Idk why you say hello, I say goodbye\"]]",
+            #"self":"[print [test2 \"hello world!\" \"Idk why you say hello, I say goodbye\"]]",
+
+            #"self":"[set (THING1) (self)][set_quoted (THING2) (self)][print [value (THING1)]][print [value (THING2)]]",
+
+            #"self":"[map_concept [concept (self)]][print [value (TEMP_ARG_0)]][print [value (CONCEPT_MAP)]]",
+            #"self":"[print [value [run [runnable [concept (return) [referable [concept (self)]]]]]]]",
+            #"self":"[print [value [get [referable [concept (self)]]]]]",
+            "self":"[print [get [referable [concept (self)]]]]",
+    
 
             
+            # TODO: sincerely think about making current set "copy" and set_quoted the actual set? 
+            # NOTE: ^ if you think about it, it makes more sense to just have a
+            # set_quoted, because you can get the value of a differnet concept
+            # if its needed, otherwise, just store string OF THE REFERENCE. Then
+            # you get the best of both worlds! (but still like the copy idea)
 
 
             # mutate needs:
@@ -68,6 +81,12 @@ class Intelligence:
             "value":"[python \"self.CacheStore(eval(self.CacheRetrieve(0, -1)), -2)\"]",
             "return":"[python \"self.CacheStore(self.CacheRetrieve(0, -1), -3)\"]",
             "set":"[python \"exec(self.CacheRetrieve(0, -1) + \" = \" + self.CacheRetrieve(1, -1))\"]",
+
+            "set_quoted":"[python \"exec(self.CacheRetrieve(0, -1) + \" = '\" + self.CacheRetrieve(1, -1) + \"'\")\"]", # NOTE: this is because if something is passed as an argument, impossible to quote what's there (quotable doesn't work, because argument is a sublevel deep) # TODO: find a better way of doing this!!!
+
+            
+            "get":"[python \"self.RunConceptGet(self.CacheRetrieve(0, -1));self.CacheStore(self.CacheRetrieve(1, -1), -2)\"]",
+
             "run":"[python \"self.RunConceptExecute(self.CacheRetrieve(0, -1))\"]", # runs quoted syntax
             "print":"[python \"print(self.CacheRetrieve(0, -1))\"]",
             "getinput":"[python \"self.CacheStore(raw_input('Intelligence requested input: '), -2)\"]",
@@ -85,7 +104,9 @@ class Intelligence:
 
             # META META CORE NOTE: these may have dependencies!
             
-            #"map_concept":"
+            #"map_concept":"[set (TEMP_ARG_0) [argument]][set (TEMP_MAP_CONCEPT) [value [value (TEMP_ARG_0)]]]",
+            #"map_concept":"[set (TEMP_ARG_0) [argument]][set (TEMP_MAP_CONCEPT) [quotable [value (TEMP_ARG_0)]]]",
+            "map_concept":"[set_quoted (TEMP_ARG_0) [argument]][set (TEMP_MAP_CONCEPT) [quotable [value (TEMP_ARG_0)]]]",
 
 
             # future concepts:
@@ -144,10 +165,20 @@ class Intelligence:
 #
 #
 # [set (TEMP_ARG_0) [argument]][set (TEMP_MAP_CONCEPT) [value (TEMP_ARG_0)]]
-conceptList = self.ParseConcepts(self.entity.Memory["TEMP_MAP_CONCEPT"])
-self.entity.Memory["CONCEPT_MAP"] = {}
-index = 0
-for concept in conceptList:
-    indexString = str(index)
-    self.entity.Memory["CONCEPT_MAP"][indexString] = {}
-    self.entity.Memory["CONCEPT_MAP"][indexString]["concept"] = 
+#def METAMapConcept(self):
+#   conceptList = self.ParseConcepts(self.entity.Memory["TEMP_MAP_CONCEPT"])
+#   self.entity.Memory["CONCEPT_MAP"] = {}
+#   index = 0
+#   for concept in conceptList:
+#       indexString = str(index)
+#       self.entity.Memory["CONCEPT_MAP"][indexString] = {}
+#       self.entity.Memory["CONCEPT_MAP"][indexString]["concept"] = self.entity.Memory["TEMP_ARG_0"] # the argument, which should be the name of the concept
+
+#       # create a straight string of the args TODO: maybe later find a way to make
+#       # this a recursive structure like it would be anyway?
+#       argsString = ""
+#       for argument in concept[1]:
+#           argsString += " " + str(argument)
+#       
+#       self.entity.Memory["CONCEPT_MAP"][indexString]["args"] = argsString
+
