@@ -313,15 +313,17 @@ class IntelligencePlatform:
     # TEMP_ARG_0 is the REFERENCE to the desired concept NOTE: this shouldn't
     # even be used!!!!!!!!!
     # TEMP_MAP_CONCEPT is the VALUE of that concept
+    # TEMP_MAP_LOC is the place to store the map
     def METAMapConcept(self):
+        mapStorage = self.entity.Memory["TEMP_MAP_LOC"]
         conceptList = self.ParseConcepts(self.entity.Memory["TEMP_MAP_CONCEPT"])
-        self.entity.Memory["CONCEPT_MAP"] = {}
+        self.entity.Memory[mapStorage] = {}
         index = -1
         for concept in conceptList:
             index += 1
             indexString = str(index)
-            self.entity.Memory["CONCEPT_MAP"][indexString] = {}
-            self.entity.Memory["CONCEPT_MAP"][indexString]["concept"] = concept[0]
+            self.entity.Memory[mapStorage][indexString] = {}
+            self.entity.Memory[mapStorage][indexString]["concept"] = concept[0]
 
             # create a straight string of the args TODO: maybe later find a way to make
             # this a recursive structure like it would be anyway?
@@ -329,4 +331,4 @@ class IntelligencePlatform:
             for argument in concept[1]:
                 argsString += " " + str(argument)
             
-            self.entity.Memory["CONCEPT_MAP"][indexString]["args"] = argsString
+            self.entity.Memory[mapStorage][indexString]["args"] = argsString
