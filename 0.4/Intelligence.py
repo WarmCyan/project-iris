@@ -63,7 +63,7 @@ class Intelligence:
             #"self":"[print [get [referable [concept (self)]]]]",
             #"self":"[set_quoted (THING) [concept (self)]][print [value [get [referable [value (THING)]]]]]",
     
-            #"self":"[map_concept (self) (SELFMAP)]"
+            "self":"[map_concept (self) (SELFMAP)][set_quoted (STORED_GETABLE_0) [reconstruct_map_index_gettable [quotable [count]] (SELFMAP) \"concept\"]][print [value [get [value (STORED_GETABLE_0)]]]]",
 
             
             # TODO: sincerely think about making current set "copy" and set_quoted the actual set? 
@@ -112,7 +112,8 @@ class Intelligence:
 
             "referable":"[python \"if self.CacheRetrieve(1, -1) == None:\n\tself.CacheStore(\\\"(\\\" + self.CacheRetrieve(0, -1) + \\\")\\\", -2)\nelse:\n\tself.CacheStore(\\\"(\\\" + self.CacheRetrieve(0, -1) + \\\" \\\" + self.CacheRetrieve(1, -1) + \\\")\\\", -2)\"]",
 
-            "quotable":"[python \"self.CacheStore(\\\"'\\\" + self.CacheRetrieve(0, -1) + \\\"'\\\", -2)\"]",
+            #"quotable":"[python \"self.CacheStore(\\\"'\\\" + self.CacheRetrieve(0, -1) + \\\"'\\\", -2)\"]",
+            "quotable":"[python \"self.CacheStore(\\\"'\\\" + str(self.CacheRetrieve(0, -1)) + \\\"'\\\", -2)\"]",
 
             # META META CORE NOTE: these may have dependencies!
             
@@ -122,6 +123,8 @@ class Intelligence:
             "map_concept":"[set_quoted (TEMP_ARG_0) [argument]][set (TEMP_MAP_CONCEPT) [value (TEMP_ARG_0)]][set_quoted (TEMP_ARG_1) [argument [count [count]]]][set_quoted (TEMP_MAP_LOC) [concept [value (TEMP_ARG_1)]]][python \"self.METAMapConcept()\"]",
 
             #"reconstruct":"[
+
+            "reconstruct_map_index_gettable":"[set (TEMP_RECONSTRUCT_MAP_INDEX) [argument]][set_quoted (TEMP_RECONSTRUCT_MAP_LOC) [argument [count [count]]]][set (TEMP_RECONSTRUCT_MAP_ADDITIVE) [argument [count [count [count]]]]][return [referable [concept [value (TEMP_RECONSTRUCT_MAP_LOC)]] [referable [value (TEMP_RECONSTRUCT_MAP_INDEX)] [referable [value (TEMP_RECONSTRUCT_MAP_ADDITIVE)]]]]]",
 
             # future concepts:
             # break concept (stops current concept)

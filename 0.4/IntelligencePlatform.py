@@ -7,6 +7,7 @@ import json
 import thread
 import Queue
 import sys
+import traceback
 
 # log types
 LOG_CACHE = "cache"
@@ -182,10 +183,13 @@ class IntelligencePlatform:
             try: 
                 self.Log("Running cycle " + str(self.cycle) + "...\n", LOG_PLATFORM)
                 self.RunConceptExecute("[self]")
-            except:
+            except Exception as e:
                 self.Log("\nERROR: Self failed to run properly", LOG_ERROR)
+                self.Log("ERROR_MSG: " + str(e), LOG_ERROR)
+                traceback.print_exc()
                 try:
                     self.logFP.close()
+                    self.logFP = None
                     self.DumpMemory()
                 except:
                     self.Log("ERROR: Could not dump memory", LOG_ERROR)
