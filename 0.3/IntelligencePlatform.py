@@ -32,7 +32,7 @@ LOG_ERROR_COLOR = "red"
 LOG_PLATFORM_COLOR = "white"
 LOG_DIALOG_COLOR = "white"
 
-LOG_PAUSE_TIME = .1 # the amount of time to pause if logging is off to simulate when actually logging (so program doesn't jump to completion
+LOG_PAUSE_TIME = .1 # the amount of time to pause if logging is off to simulate when actually logging (slows down the intelligence significantly so it doesn't immediately jump to completion when logging is turned off)
 
 # log switches
 logCacheOn = True
@@ -51,6 +51,7 @@ class IntelligencePlatform:
     entityData = {}
     entityDataFolderPath = ""
     cycle = 0
+    continueSelf = True
             
     level = 0
     cache = []
@@ -58,44 +59,49 @@ class IntelligencePlatform:
 
     timeStack = []
 
-    continueSelf = True
-
     logFP = None
     platformLogFP = None
 
-    active = False
+    commandHandlingActive = False
     entityRunning = False
 
     consoleLogEnabled = True
 
     # non kill-safe functions (allow even if kill-safe has been activated)
-    safeFunctions = ['Log', 'platformLogFP', 'logFP', 'entityData', 'safeFunctions', 'entityRunning', 'active', 'HandleCommand', 'commandQueue', 'cycle']
-
+    safeFunctions = ['Log', 'platformLogFP', 'logFP', 'entityData', 'safeFunctions', 'entityRunning', 'commandHandlingActive', 'HandleCommand', 'commandQueue', 'cycle']
 
     commandQueue = Queue.Queue()
 
+    # NOTE: press tab and then enter to get a platform level command prompt
     def ConsoleInput(self, cmdQueue):
-        while self.active:
-            commandkey = raw_input()
+        while self.commandHandlingActive:
+            # wait for a tab keypress
+            commandkey = raw_input() 
             if commandkey != "\t": continue
 
+            # user wants to enter command, slow down the intelligence, hide the log, and show the prompt
             cmdQueue.put("HIDELOG")
             cmdQueue.put("DISPLAY>")
             cmd = raw_input()
-            if cmd == "panic":
+            if cmd == "panic": # issue a panic stop. The entity is killed from THIS thread, (independent of what main thread is doing.)
                 try:
                     self.platformLogFP.write("#### !! - PANIC-STOP ISSUED - !! ####\n")
                 except:
                     pass
                 self.KILL(False) # kill IMMEDIATELY if there's an issue
+                # NOTE: due to issues in how the end of StartLife() is handled
+                # (it doesn't know when in panic mode), the platform triggers
+                # its own failsafe and shuts down when a panic stop is issued.
             cmdQueue.put("SHOWLOG")
             cmdQueue.put(cmd)
 
+    # run any commands coming from command input thread
     def HandleCommand(self):
-        #print("CHECKING COMMAND QUEUE")
+        # check queue filled by input thread
         while not self.commandQueue.empty():
             cmd = self.commandQueue.get()
 
+            # log command if appropriate
             if cmd != "HIDELOG" and cmd != "SHOWLOG" and cmd != "DISPLAY>":
                 reHide = False
                 if self.consoleLogEnabled == False:
@@ -105,6 +111,7 @@ class IntelligencePlatform:
 
                 if reHide: self.consoleLogEnabled = False
             
+            # run commands as necessary
             if cmd == "kill":
                 self.KILL(True)
             elif cmd == "HIDELOG":
@@ -115,10 +122,9 @@ class IntelligencePlatform:
                 sys.stdout.write("> ")
                 sys.stdout.flush()
 
-
     def CreateEntity(self):
-
-        self.active = True
+        # start command input thread
+        self.commandHandlingActive = True
         thread.start_new_thread(self.ConsoleInput, (self.commandQueue,))
         
         # load current data
@@ -138,7 +144,6 @@ class IntelligencePlatform:
         self.Log("Building data folder for new entity...", LOG_PLATFORM)
         folderName = str(self.entityData["Name"]) + " " + str(self.entityData["Version"]) + "." + str(self.entityData["Build"]) + " (" + time.strftime("%y.%m.%d-%H.%M.%S") + ")"
         self.entityDataFolderPath = "InstanceLogs/" + folderName
-        #os.makedirs("./InstanceLogs/" + folderName)
         os.makedirs("./" + self.entityDataFolderPath)
         self.Log("Created Folder: " + self.entityDataFolderPath) 
 
@@ -152,14 +157,14 @@ class IntelligencePlatform:
         self.Log("Instantiating new intelligence instance in entity...", LOG_PLATFORM)
         self.entity = Intelligence.Intelligence()
 
+        # display entity's intelligence meta data
         self.Log("----------------------------------------", LOG_PLATFORM)
         self.Log("\t" + str(self.entityData["Name"]) + " " + str(self.entityData["Version"]), LOG_PLATFORM)
         self.Log("\tBuild " + str(self.entityData["Build"]), LOG_PLATFORM)
         self.Log("----------------------------------------\n", LOG_PLATFORM)
         
-        #self.Log("Recording initial memory...", LOG_PLATFORM)
         # record initial memory set
-        self.DumpMemory(True)
+        self.DumpMemory(initial=True)
 
     def StartLife(self):
         self.Log("Starting life cycles...\n", LOG_PLATFORM)
@@ -173,7 +178,7 @@ class IntelligencePlatform:
             self.Log("Creating cycle " + str(self.cycle) + " log file...", LOG_PLATFORM)
             self.logFP = open(self.entityDataFolderPath + "/Cycle_" + str(self.cycle) + ".log", "w")
 
-            self.continueSelf = False # should self sustain (keep itself alive by running itself)
+            self.continueSelf = False # should self sustain (keep itself alive by running itself) NOTE: RunConceptExecute will set this to true if it finds the self concept
             try: 
                 self.Log("Running cycle " + str(self.cycle) + "...\n", LOG_PLATFORM)
                 self.RunConceptExecute("[self]")
@@ -186,42 +191,45 @@ class IntelligencePlatform:
                     self.Log("ERROR: Could not dump memory", LOG_ERROR)
                 break
 
+            # stop here if the entity was killed (NOTE: if panic stop issued,
+            # THIS CODE IS NOT REACHED. Rather, it appears to break out of the
+            # while, and trigger the failsafe when it tries to kill the entity
+            # again)
             if not self.entityRunning: 
                 self.Log("Entity killed, stopping platform...")
                 try: self.platformLogFP.close()
                 except: self.Log("NOTE: platform log not available")
                 return
             
+            # close the cycle log
             self.Log("\nCycle " + str(self.cycle) + " finished execution", LOG_PLATFORM) 
             self.logFP.close()
             self.logFP = None
 
             # create a memory dump
             self.DumpMemory()
-
-            # TODO: platform cmd here
             
         self.Log("Entity is no longer self sustaining. Shutting down...", LOG_PLATFORM)
-        #self.level = -100
-        #self.entity.Memory = None
-        #self.entity = None
         self.KILL()
 
         self.platformLogFP.close()
     
+    # shut down all variables, delete entity, activate fail-safe
     def KILL(self, salvageMemory = False):
+        self.consoleLogEnabled = True
         self.Log("Shutting down file pointers...", LOG_PLATFORM)
         try: 
             self.logFP.close()
             self.logFP = None
         except: self.Log("NOTE: cycle log not available")
 
+        # if specified, try to save what's in memory
         if salvageMemory:
             self.Log("Attempting to salvage memory...", LOG_PLATFORM)
-            #self.DumpMemory(salvage=True)
             try: self.DumpMemory(salvage=True)
             except: self.Log("ERROR: Failed to salvage memory", LOG_ERROR)
         
+        # delete all of entity and cache
         self.Log("Safely corrupting and deleting entity...", LOG_PLATFORM)
         self.entityRunning = False
         self.level = -100
@@ -231,6 +239,7 @@ class IntelligencePlatform:
         delattr(IntelligencePlatform, "entity")
         delattr(IntelligencePlatform, "cache")
 
+        # reset all attributes/functions in class to the fail-safe function
         self.Log("Activating fail safe kill switch...", LOG_PLATFORM)
         attributes = dir(self)
         for attribute in attributes:
@@ -242,19 +251,26 @@ class IntelligencePlatform:
     def FAIL_SAFE(self):
         print("_FAIL_SAFE_ - BLOCKED ATTEMPTED ACCESS ON ATTRIBUTE AFTER KILL SWITCH WAS THROWN.")
         print("_FAIL_SAFE_ - CORRUPTING ALL REMAINING FUNCTIONS...")
+        
+        # gracefully shut down platform log
         try:
             self.platformLogFP.write("#### !! - FAIL-SAFE TRIGGERED - !! ####")
             self.platformLogFP.close()
         except:
             print("_FAIL_SAFE_ - COULD NOT SALVAGE PLATFORM LOG")
+
+        # delete all attributes/functions
         attributes = dir(self)
         for attribute in attributes:
             print("\tDELETING '" + attribute + "'...")
             try: delattr(IntelligencePlatform, attribute)
             except AttributeError: print("\tNOTICE - '" + attribute + "' ALREADY NONEXISTANT")
+
+        # shutdown
         print("_FAIL_SAFE_ - FORCING PROGRAM STOP.")
         exit()
 
+    # Save all the memory concepts in a JSON file
     def DumpMemory(self, initial = False, salvage = False):
         backupFileName = ""
         if initial:
@@ -272,7 +288,6 @@ class IntelligencePlatform:
         backupFP.close()
 
         self.Log("Entity memory dumped to " + backupFileName, LOG_PLATFORM)
-    
 
     # get the concepts and arguments from a string   
     def ParseConcepts(self, conceptString, indent = ""):
@@ -365,12 +380,8 @@ class IntelligencePlatform:
             self.timeStack.append(time.clock()) # TIMING
 
             # make sure thing actually exists
-            try:
-                #self.Log("=============== evaluating '" + str(preConstructedString + reference) + "' ==================") # DEBUG
-                eval(preConstructedString + reference)
-            except:
-                #self.Log("----------------- creating '" + str(preConstructedString + reference) + "' -----------------------") # DEBUG
-                exec(preConstructedString + reference + " = {}")
+            try: eval(preConstructedString + reference)
+            except: exec(preConstructedString + reference + " = {}")
             
             reference += self.RunConceptGet(conceptList[0][1][0], True, str(preConstructedString + reference))
             runTime = (time.clock() - self.timeStack.pop()) * 1000
