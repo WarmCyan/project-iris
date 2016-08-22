@@ -37,7 +37,9 @@ class Intelligence:
             #"self":"[set (THING) [quotable [runnable [concept (mutate)] [referable [concept (self)]]]]][print [value (THING)]]", # NOTE: amazing meta powers ACTIVATE!!!!!!!!!!!!!!!
             #"self":"[print [quotable [concept (self)]]]",
 
-            "self":"[set (INPUT) [quotable [getinput]]][print [value (INPUT)]]",
+            #"self":"[set (INPUT) [quotable [getinput]]][print [value (INPUT)]]",
+
+
             #"self":"[set (INPUT) [quotable [getinput]]][set [run [runnable [concept (return)] [referable [value (INPUT)]]]] [quotable [runnable [concept (print)] [referable [concept (Nathan)]]]]][print [value (Nathan)]]",
 
             #"self":"[print [value (runvalue)]]",
@@ -52,7 +54,7 @@ class Intelligence:
             #"self":"[map_concept [concept (self)]][print [value (TEMP_ARG_0)]][print [value (CONCEPT_MAP)]]",
             #"self":"[map_concept [concept (self)]][print [value (TEMP_ARG_0)]]",
             #"self":"[map_concept (runvalue)][print [value (TEMP_ARG_0)]][print [value (TEMP_MAP_CONCEPT)]][print [value (CONCEPT_MAP)]]",
-            #"self":"[map_concept (runvalue) (ZECONCEPT)][print [value (ZECONCEPT)]]",
+            "self":"[map_concept (runvalue) (ZECONCEPT)][print [value (ZECONCEPT)]]",
 
 
             #"self":"[print [value [run [runnable [concept (return) [referable [concept (self)]]]]]]]",

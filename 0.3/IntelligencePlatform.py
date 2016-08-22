@@ -4,6 +4,9 @@ from termcolor import colored
 import os
 import gc
 import json
+import thread
+import Queue
+import sys
 
 # log types
 LOG_CACHE = "cache"
@@ -29,6 +32,9 @@ LOG_ERROR_COLOR = "red"
 LOG_PLATFORM_COLOR = "white"
 LOG_DIALOG_COLOR = "white"
 
+LOG_PAUSE_TIME = .1 # the amount of time to pause if logging is off to simulate when actually logging (so program doesn't jump to completion
+
+# log switches
 logCacheOn = True
 logCacheDetailOn = True
 logConceptParseOn = True
@@ -57,10 +63,64 @@ class IntelligencePlatform:
     logFP = None
     platformLogFP = None
 
+    active = False
+    entityRunning = False
+
+    consoleLogEnabled = True
+
     # non kill-safe functions (allow even if kill-safe has been activated)
-    safeFunctions = ['Log', 'platformLogFP', 'logFP', 'entityData', 'safeFunctions']
+    safeFunctions = ['Log', 'platformLogFP', 'logFP', 'entityData', 'safeFunctions', 'entityRunning', 'active', 'HandleCommand', 'commandQueue', 'cycle']
+
+
+    commandQueue = Queue.Queue()
+
+    def ConsoleInput(self, cmdQueue):
+        while self.active:
+            commandkey = raw_input()
+            if commandkey != "\t": continue
+
+            cmdQueue.put("HIDELOG")
+            cmdQueue.put("DISPLAY>")
+            cmd = raw_input()
+            if cmd == "panic":
+                try:
+                    self.platformLogFP.write("#### !! - PANIC-STOP ISSUED - !! ####\n")
+                except:
+                    pass
+                self.KILL(False) # kill IMMEDIATELY if there's an issue
+            cmdQueue.put("SHOWLOG")
+            cmdQueue.put(cmd)
+
+    def HandleCommand(self):
+        #print("CHECKING COMMAND QUEUE")
+        while not self.commandQueue.empty():
+            cmd = self.commandQueue.get()
+
+            if cmd != "HIDELOG" and cmd != "SHOWLOG" and cmd != "DISPLAY>":
+                reHide = False
+                if self.consoleLogEnabled == False:
+                    reHide = True
+                    self.consoleLogEnabled = True
+                self.Log("PLATFORM COMMAND - '" + cmd + "'", LOG_PLATFORM)
+
+                if reHide: self.consoleLogEnabled = False
+            
+            if cmd == "kill":
+                self.KILL(True)
+            elif cmd == "HIDELOG":
+                self.consoleLogEnabled = False
+            elif cmd == "SHOWLOG":
+                self.consoleLogEnabled = True
+            elif cmd == "DISPLAY>":
+                sys.stdout.write("> ")
+                sys.stdout.flush()
+
 
     def CreateEntity(self):
+
+        self.active = True
+        thread.start_new_thread(self.ConsoleInput, (self.commandQueue,))
+        
         # load current data
         self.Log("Loading entity data...", LOG_PLATFORM)
         entityFP = open("ENTITY.dat", "r")
@@ -102,8 +162,9 @@ class IntelligencePlatform:
         self.DumpMemory(True)
 
     def StartLife(self):
-        self.Log("Starting life...\n", LOG_PLATFORM)
+        self.Log("Starting life cycles...\n", LOG_PLATFORM)
         self.cycle = 0
+        self.entityRunning = True
 
         while (self.continueSelf):
             self.Log("----- CYCLE " + str(self.cycle) + " -----", LOG_PLATFORM)
@@ -118,9 +179,18 @@ class IntelligencePlatform:
                 self.RunConceptExecute("[self]")
             except:
                 self.Log("\nERROR: Self failed to run properly", LOG_ERROR)
-                self.logFP.close()
-                self.DumpMemory()
+                try:
+                    self.logFP.close()
+                    self.DumpMemory()
+                except:
+                    self.Log("ERROR: Could not dump memory", LOG_ERROR)
                 break
+
+            if not self.entityRunning: 
+                self.Log("Entity killed, stopping platform...")
+                try: self.platformLogFP.close()
+                except: self.Log("NOTE: platform log not available")
+                return
             
             self.Log("\nCycle " + str(self.cycle) + " finished execution", LOG_PLATFORM) 
             self.logFP.close()
@@ -132,14 +202,28 @@ class IntelligencePlatform:
             # TODO: platform cmd here
             
         self.Log("Entity is no longer self sustaining. Shutting down...", LOG_PLATFORM)
-        self.level = -100
-        self.entity.Memory = None
-        self.entity = None
+        #self.level = -100
+        #self.entity.Memory = None
+        #self.entity = None
+        self.KILL()
 
         self.platformLogFP.close()
     
-    def KILL(self):
+    def KILL(self, salvageMemory = False):
+        self.Log("Shutting down file pointers...", LOG_PLATFORM)
+        try: 
+            self.logFP.close()
+            self.logFP = None
+        except: self.Log("NOTE: cycle log not available")
+
+        if salvageMemory:
+            self.Log("Attempting to salvage memory...", LOG_PLATFORM)
+            #self.DumpMemory(salvage=True)
+            try: self.DumpMemory(salvage=True)
+            except: self.Log("ERROR: Failed to salvage memory", LOG_ERROR)
+        
         self.Log("Safely corrupting and deleting entity...", LOG_PLATFORM)
+        self.entityRunning = False
         self.level = -100
         for concept in self.entity.Memory:
             self.entity.Memory[concept] = None
@@ -158,6 +242,11 @@ class IntelligencePlatform:
     def FAIL_SAFE(self):
         print("_FAIL_SAFE_ - BLOCKED ATTEMPTED ACCESS ON ATTRIBUTE AFTER KILL SWITCH WAS THROWN.")
         print("_FAIL_SAFE_ - CORRUPTING ALL REMAINING FUNCTIONS...")
+        try:
+            self.platformLogFP.write("#### !! - FAIL-SAFE TRIGGERED - !! ####")
+            self.platformLogFP.close()
+        except:
+            print("_FAIL_SAFE_ - COULD NOT SALVAGE PLATFORM LOG")
         attributes = dir(self)
         for attribute in attributes:
             print("\tDELETING '" + attribute + "'...")
@@ -166,11 +255,14 @@ class IntelligencePlatform:
         print("_FAIL_SAFE_ - FORCING PROGRAM STOP.")
         exit()
 
-    def DumpMemory(self, initial = False):
+    def DumpMemory(self, initial = False, salvage = False):
         backupFileName = ""
         if initial:
             self.Log("Backing up initial entity memory set...", LOG_PLATFORM)
             backupFileName = self.entityDataFolderPath + "/_Memory_INITIAL.json"
+        elif salvage:
+            self.Log("Salvaging entity memory set...", LOG_PLATFORM)
+            backupFileName = self.entityDataFolderPath + "/_Memory_SALVAGE.json"
         else: 
             self.Log("Backing up entity's memory set for cycle " + str(self.cycle) + "...", LOG_PLATFORM)
             backupFileName = self.entityDataFolderPath + "/Memory_" + str(self.cycle) + ".json"
@@ -251,6 +343,9 @@ class IntelligencePlatform:
         return reference[conceptStartIndex:conceptEndIndex]
 
     def RunConceptGet(self, conceptString, multiLevel = False, preConstructedString = ""):
+        self.HandleCommand()
+        if (self.entityRunning == False): return
+
         self.Log("Intelligence:" + conceptString, LOG_INTELLIGENCE)
         indent = self.GetLevelIndent(self.level)
         self.Log(indent + "LEVEL: " + str(self.level), LOG_SYNTAX)
@@ -287,6 +382,9 @@ class IntelligencePlatform:
         else: return reference
 
     def RunConceptExecute(self, conceptString):
+        self.HandleCommand()
+        if (self.entityRunning == False): return
+
         self.Log("Intelligence:" + conceptString, LOG_INTELLIGENCE)
         indent = self.GetLevelIndent(self.level)
 
@@ -305,16 +403,21 @@ class IntelligencePlatform:
             for argument in concept[1]:
                 self.Log(indent + "  ARGUMENT: " + str(argument), LOG_SYNTAX)
 
+                #if not self.entityRunning: return
+
                 # execute argument 
                 if argument.startswith("["):
                     self.Log(indent + "[" + str(self.level) + "](executing argument '" + argument + "')", LOG_EXECUTION)
                     self.level += 1
                     self.timeStack.append(time.clock()) # TIMING
                     self.RunConceptExecute(argument)
+                    if not self.entityRunning: return
                     runTime = (time.clock() - self.timeStack.pop()) * 1000
                     self.level -= 1
 
                     self.Log(indent + "[" + str(self.level) + "](argument '" + argument + "' execution: .......... " + str(runTime) + " ms)", LOG_TIMING)
+
+                #if not self.entityRunning: return
 
                 # get argument
                 if argument.startswith("("):
@@ -322,6 +425,7 @@ class IntelligencePlatform:
                     self.level += 1
                     self.timeStack.append(time.clock()) # TIMING
                     self.RunConceptGet(argument)
+                    if not self.entityRunning: return
                     runTime = (time.clock() - self.timeStack.pop()) * 1000
                     self.level -= 1
 
@@ -336,6 +440,8 @@ class IntelligencePlatform:
 
             # execute concept
             if concept[0] == "python":
+                #if not self.entityRunning: return
+
                 code = concept[1][0][1:-1]
                 self.Log(indent + "EXECUTING: '" + code + "'", LOG_SYNTAX)
                 exec(code)
@@ -350,6 +456,7 @@ class IntelligencePlatform:
                 self.level += 1
                 self.timeStack.append(time.clock()) # TIMING
                 self.RunConceptExecute(runstring)
+                if not self.entityRunning: return
                 runTime = (time.clock() - self.timeStack.pop()) * 1000
                 self.level -= 1
                 self.Log(indent + "[" + str(self.level) + "](concept '" + concept[0] + "' execution: ......... " + str(runTime) + " ms)", LOG_TIMING)
@@ -410,6 +517,10 @@ class IntelligencePlatform:
 
         if self.logFP != None: self.logFP.write(msg + "\n")
         if self.platformLogFP != None and (level == LOG_PLATFORM or level == LOG_ERROR or level == LOG_DIALOG): self.platformLogFP.write(msg + "\n")
+
+        if not self.consoleLogEnabled: 
+            time.sleep(LOG_PAUSE_TIME);
+            return
         
         if level == LOG_CACHE and logCacheOn: 
             print(colored(str(msg), LOG_CACHE_COLOR))
