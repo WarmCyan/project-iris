@@ -62,6 +62,8 @@ class IntelligencePlatform:
     # TODO: add cycle execution times as well?
     timeExecutionStart = None
     timeCycleStart = None
+    cycleMaxDepth = 0
+    cycleExecutions = 0
 
     logFP = None
     platformLogFP = None
@@ -179,6 +181,8 @@ class IntelligencePlatform:
         while (self.continueSelf):
             self.Log("----- CYCLE " + str(self.cycle) + " -----", LOG_PLATFORM)
             self.timeCycleStart = time.clock()
+            self.cycleMaxDepth = 0
+            self.cycleExecutions = 0
             
             # create log file
             self.Log("Creating cycle " + str(self.cycle) + " log file...", LOG_PLATFORM)
@@ -213,6 +217,7 @@ class IntelligencePlatform:
             # close the cycle log
             cycleTime = (time.clock() - self.timeCycleStart) * 1000
             self.Log("\nCycle " + str(self.cycle) + " finished execution (" + str(cycleTime) + " ms)", LOG_PLATFORM) 
+            self.Log("Cycle reached a max depth of " + str(self.cycleMaxDepth) + " levels and ran " + str(self.cycleExecutions) + " concepts", LOG_PLATFORM)
             self.logFP.close()
             self.logFP = None
 
@@ -415,6 +420,8 @@ class IntelligencePlatform:
         indent = self.GetLevelIndent(self.level)
 
         self.Log(indent + "LEVEL: " + str(self.level), LOG_SYNTAX)
+        if self.level > self.cycleMaxDepth: self.cycleMaxDepth = self.level
+        self.cycleExecutions += 1
 
         conceptList = self.ParseConcepts(conceptString, indent)
 
