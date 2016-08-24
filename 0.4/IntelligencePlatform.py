@@ -60,6 +60,8 @@ class IntelligencePlatform:
 
     timeStack = []
     # TODO: add cycle execution times as well?
+    timeExecutionStart = None
+    timeCycleStart = None
 
     logFP = None
     platformLogFP = None
@@ -171,10 +173,12 @@ class IntelligencePlatform:
     def StartLife(self):
         self.Log("Starting life cycles...\n", LOG_PLATFORM)
         self.cycle = 0
+        self.timeExecutionStart = time.clock()
         self.entityRunning = True
 
         while (self.continueSelf):
             self.Log("----- CYCLE " + str(self.cycle) + " -----", LOG_PLATFORM)
+            self.timeCycleStart = time.clock()
             
             # create log file
             self.Log("Creating cycle " + str(self.cycle) + " log file...", LOG_PLATFORM)
@@ -207,7 +211,8 @@ class IntelligencePlatform:
                 return
             
             # close the cycle log
-            self.Log("\nCycle " + str(self.cycle) + " finished execution", LOG_PLATFORM) 
+            cycleTime = (time.clock() - self.timeCycleStart) * 1000
+            self.Log("\nCycle " + str(self.cycle) + " finished execution (" + str(cycleTime) + " ms)", LOG_PLATFORM) 
             self.logFP.close()
             self.logFP = None
 
@@ -215,6 +220,10 @@ class IntelligencePlatform:
             self.DumpMemory()
             
         self.Log("Entity is no longer self sustaining. Shutting down...", LOG_PLATFORM)
+        try: 
+            totalTime = (time.clock() - self.timeExecutionStart) * 1000
+            self.Log("Entity lifespan: " + str(totalTime) + " ms", LOG_PLATFORM)
+        except: pass
         self.KILL()
 
         self.platformLogFP.close()
@@ -222,7 +231,7 @@ class IntelligencePlatform:
     # shut down all variables, delete entity, activate fail-safe
     def KILL(self, salvageMemory = False):
         self.consoleLogEnabled = True
-        self.Log("Shutting down file pointers...", LOG_PLATFORM)
+        self.Log("Closing file pointers...", LOG_PLATFORM)
         try: 
             self.logFP.close()
             self.logFP = None
@@ -253,7 +262,7 @@ class IntelligencePlatform:
         gc.collect();
         self.Log("Entity deleted", LOG_PLATFORM)
 
-    def FAIL_SAFE(self):
+    def FAIL_SAFE(self, **args):
         print("_FAIL_SAFE_ - BLOCKED ATTEMPTED ACCESS ON ATTRIBUTE AFTER KILL SWITCH WAS THROWN.")
         print("_FAIL_SAFE_ - CORRUPTING ALL REMAINING FUNCTIONS...")
         
