@@ -64,9 +64,14 @@ class Intelligence:
             #"self":"[set_quoted (THING) [concept (self)]][print [value [get [referable [value (THING)]]]]]",
     
             #"self":"[map_concept (self) (SELFMAP)][set_quoted (STORED_GETABLE_0) [reconstruct_map_index_gettable [quotable [count]] (SELFMAP) \"concept\"]][print [value [get [value (STORED_GETABLE_0)]]]]",
-            "self":"[map_concept (self) (SELFMAP)][print [reconstruct_map_index [quotable [count]] (SELFMAP)]]",
 
-            #"self":"[print [concat \"hello\" \"world\"]]", # NOTE: need a "dequote" concept!
+
+            
+            #"self":"[map_concept (self) (SELFMAP)][print [reconstruct_map_index [quotable [count]] (SELFMAP)]]", # NOTE: AAWWWWWWWWWWW YEAAAAAAAAAAAAAAHHHHHHHHHH
+
+            "self":"[if [dequotable \"True\"] [runnable [concept (print)] \"It's true!\"] [runnable [concept (print)] \"It's a dirty lie!\"]]",
+            
+            #"self":"[print [concat [dequotable \"hello\"] [dequotable \" world\"]]]", 
 
             
             # TODO: sincerely think about making current set "copy" and set_quoted the actual set? 
@@ -111,6 +116,9 @@ class Intelligence:
 
 
             "concat":"[python \"self.CacheStore(str(self.CacheRetrieve(0, -1)) + str(self.CacheRetrieve(1, -1)), -2)\"]",
+
+
+            "if":"[python \"if (eval(self.CacheRetrieve(0, -1)) == True):self.RunConceptExecute(self.CacheRetrieve(1, -1))\nelif self.CacheRetrieve(2, -1) != None:self.RunConceptExecute(self.CacheRetrieve(2, -1))\"]",
             
 
             # META CORE
@@ -123,6 +131,8 @@ class Intelligence:
 
             #"quotable":"[python \"self.CacheStore(\\\"'\\\" + self.CacheRetrieve(0, -1) + \\\"'\\\", -2)\"]",
             "quotable":"[python \"self.CacheStore(\\\"'\\\" + str(self.CacheRetrieve(0, -1)) + \\\"'\\\", -2)\"]",
+
+            "dequotable":"[python \"self.CacheStore(str(self.CacheRetrieve(0, -1))[1:-1], -2)\"]",
 
             # META META CORE NOTE: these may have dependencies!
             

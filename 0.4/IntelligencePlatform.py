@@ -330,7 +330,8 @@ class IntelligencePlatform:
             elif character == "\\": 
                 ESCAPE = True 
                 continue
-            elif (character == "\"" or character == "'") and not ESCAPE:
+            #elif (character == "\"" or character == "'") and not ESCAPE:
+            elif (character == "\"") and not ESCAPE:
                 if quoteLevel == 0: quoteLevel += 1
                 elif quoteLevel == 1: quoteLevel -= 1
             elif character == " ": recordingConcept = False
