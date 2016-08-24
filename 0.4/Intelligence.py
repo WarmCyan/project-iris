@@ -76,7 +76,9 @@ class Intelligence:
 
             #"self":"[print [length (dictionary)]]",
 
-            "self":"[map_concept (self) (SELFMAP)][print [reconstruct (SELFMAP)]]",
+            #"self":"[map_concept (self) (SELFMAP)][print [reconstruct (SELFMAP)]]",
+            #"self":"[map_concept (map_concept) (SELFMAP)][print [reconstruct (SELFMAP)]]",
+            "self":"[map_concept (self) (SELFMAP)][array_shift (SELFMAP) [count [count]]][print [value (SELFMAP)]]",
 
             
             # TODO: sincerely think about making current set "copy" and set_quoted the actual set? 
@@ -108,6 +110,12 @@ class Intelligence:
             ">=":"[python \"self.CacheStore(eval(str(self.CacheRetrieve(0, -1)) + \" >= \" + str(self.CacheRetrieve(1, -1))), -2)\"]",
             "!=":"[python \"self.CacheStore(eval(str(self.CacheRetrieve(0, -1)) + \" != \" + str(self.CacheRetrieve(1, -1))), -2)\"]",
 
+            # MATH CONCEPTS
+            "-":"[python \"self.CacheStore(eval(str(self.CacheRetrieve(0, -1)) + \" - \" + str(self.CacheRetrieve(1, -1))), -2)\"]",
+            "+":"[python \"self.CacheStore(eval(str(self.CacheRetrieve(0, -1)) + \" + \" + str(self.CacheRetrieve(1, -1))), -2)\"]",
+            "*":"[python \"self.CacheStore(eval(str(self.CacheRetrieve(0, -1)) + \" * \" + str(self.CacheRetrieve(1, -1))), -2)\"]",
+            "/":"[python \"self.CacheStore(eval(str(self.CacheRetrieve(0, -1)) + \" / \" + str(self.CacheRetrieve(1, -1))), -2)\"]",
+
             # CORE CONCEPTS
             "value":"[python \"self.CacheStore(eval(self.CacheRetrieve(0, -1)), -2)\"]",
             "return":"[python \"self.CacheStore(self.CacheRetrieve(0, -1), -3)\"]",
@@ -125,6 +133,7 @@ class Intelligence:
             #"getinput":"[python \"self.CacheStore(raw_input('Intelligence requested input: '), -2)\"]",
             "getinput":"[python \"self.CacheStore(self.GetInput(), -2)\"]",
             "count":"[python \"if self.CacheRetrieve(0, -1) == None:\n\tself.CacheStore(int(0), -2)\nelse:\n\tself.CacheStore(eval('1+int(self.CacheRetrieve(0, -1))'), -2)\"]", # meta concept to potentially keep!
+
             "argument":"[python \"if self.CacheRetrieve(0, -1) == None:\n\tself.CacheStore(self.CacheRetrieve(0, -3), -2)\nelse:\n\tself.CacheStore(self.CacheRetrieve(int(self.CacheRetrieve(0, -1)), -3), -2)\"]",
 
 
@@ -133,7 +142,7 @@ class Intelligence:
 
             "if":"[python \"if (eval(str(self.CacheRetrieve(0, -1))) == True):self.RunConceptExecute(self.CacheRetrieve(1, -1))\nelif self.CacheRetrieve(2, -1) != None:self.RunConceptExecute(self.CacheRetrieve(2, -1))\"]",
 
-            "length":"[python \"self.CacheStore(len(eval(self.CacheRetrieve(0, -1)).keys()), -2)\"]",
+            "length":"[python \"self.CacheStore(len(eval(str(self.CacheRetrieve(0, -1))).keys()), -2)\"]",
             
 
             # META CORE
@@ -163,19 +172,25 @@ class Intelligence:
 
             #"reconstruct":"[
 
+            #"reconstruct_map_index":"" + 
+                #"[set (TEMP_RECONSTRUCT_MAP_INDEX) [argument]]" +
+                #"[set_quoted (TEMP_RECONSTRUCT_MAP_LOC) [argument [count [count]]]]" +
+                #"[set_quoted (STORED_GETABLE_0) [reconstruct_map_index_gettable [value (TEMP_RECONSTRUCT_MAP_INDEX)] [value (TEMP_RECONSTRUCT_MAP_LOC)] \"concept\"]]" + 
+                #"[set_quoted (STORED_GETABLE_1) [reconstruct_map_index_gettable [value (TEMP_RECONSTRUCT_MAP_INDEX)] [value (TEMP_RECONSTRUCT_MAP_LOC)] \"args\"]]" + 
+                #"[return [runnable [value [get [value (STORED_GETABLE_0)]]] [value [get [value (STORED_GETABLE_1)]]]]]",
+#
             "reconstruct_map_index":"" + 
                 "[set (TEMP_RECONSTRUCT_MAP_INDEX) [argument]]" +
                 "[set_quoted (TEMP_RECONSTRUCT_MAP_LOC) [argument [count [count]]]]" +
-                "[set_quoted (STORED_GETABLE_0) [reconstruct_map_index_gettable [value (TEMP_RECONSTRUCT_MAP_INDEX)] [value (TEMP_RECONSTRUCT_MAP_LOC)] \"concept\"]]" + 
-                "[set_quoted (STORED_GETABLE_1) [reconstruct_map_index_gettable [value (TEMP_RECONSTRUCT_MAP_INDEX)] [value (TEMP_RECONSTRUCT_MAP_LOC)] \"args\"]]" + 
+                "[set_quoted (STORED_GETABLE_0) [build_array_gettable_additive [value (TEMP_RECONSTRUCT_MAP_LOC)] [value (TEMP_RECONSTRUCT_MAP_INDEX)] \"concept\"]]" + 
+                "[set_quoted (STORED_GETABLE_1) [build_array_gettable_additive [value (TEMP_RECONSTRUCT_MAP_LOC)] [value (TEMP_RECONSTRUCT_MAP_INDEX)] \"args\"]]" + 
                 "[return [runnable [value [get [value (STORED_GETABLE_0)]]] [value [get [value (STORED_GETABLE_1)]]]]]",
 
-            "reconstruct_map_index_gettable":"" +
-                "[set (TEMP_RECONSTRUCT_MAP_INDEX) [argument]]" +
-                "[set_quoted (TEMP_RECONSTRUCT_MAP_LOC) [argument [count [count]]]]" +
-                "[set (TEMP_RECONSTRUCT_MAP_ADDITIVE) [argument [count [count [count]]]]]" + 
-                "[return [referable [concept [value (TEMP_RECONSTRUCT_MAP_LOC)]] [referable [value (TEMP_RECONSTRUCT_MAP_INDEX)] [referable [value (TEMP_RECONSTRUCT_MAP_ADDITIVE)]]]]]",
-
+            #"reconstruct_map_index_gettable":"" +
+                #"[set (TEMP_RECONSTRUCT_MAP_INDEX) [argument]]" +
+                #"[set_quoted (TEMP_RECONSTRUCT_MAP_LOC) [argument [count [count]]]]" +
+                #"[set (TEMP_RECONSTRUCT_MAP_ADDITIVE) [argument [count [count [count]]]]]" + 
+                #"[return [referable [concept [value (TEMP_RECONSTRUCT_MAP_LOC)]] [referable [value (TEMP_RECONSTRUCT_MAP_INDEX)] [referable [value (TEMP_RECONSTRUCT_MAP_ADDITIVE)]]]]]",
 
             "reconstruct":"" + 
                 "[set (TEMP_RECURSIVE_RECONSTRUCT_INDEX) [count]]" +
@@ -185,7 +200,6 @@ class Intelligence:
                 "[return [value (TEMP_RECURSIVE_RECONSTRUCT_STRING)]]", #takes args, sets memory data, then just calls recursive construct without any args
             
             "recursive_reconstruct":"[if [< [value (TEMP_RECURSIVE_RECONSTRUCT_INDEX)] [length [value (TEMP_RECURSIVE_RECONSTRUCT_MAPLOC)]]] [runnable [concept (recursive_reconstruct_build)]]]",
-
 
             # temp recursive reconstruct index
             # temp recursive reconstruct string
@@ -197,7 +211,42 @@ class Intelligence:
                 "[recursive_reconstruct]",
 
 
+            "build_array_gettable_additive":""+
+                "[set_quoted (TEMP_BUILD_ARRAY_GETTABLE_LOC) [argument]]"+
+                "[set (TEMP_BUILD_ARRAY_GETTABLE_INDEX) [argument [count [count]]]]"+
+                "[set (TEMP_BUILD_ARRAY_GETTABLE_ADDITIVE) [argument [count [count [count]]]]]"+
+                "[return [referable [concept [value (TEMP_BUILD_ARRAY_GETTABLE_LOC)]] [referable [value (TEMP_BUILD_ARRAY_GETTABLE_INDEX)] [referable [value (TEMP_BUILD_ARRAY_GETTABLE_ADDITIVE)]]]]]",
 
+            "build_array_gettable":""+
+                "[set_quoted (TEMP_BUILD_ARRAY_GETTABLE_LOC) [argument]]"+
+                "[set (TEMP_BUILD_ARRAY_GETTABLE_INDEX) [argument [count [count]]]]"+
+                "[return [referable [concept [value (TEMP_BUILD_ARRAY_GETTABLE_LOC)]] [referable [value (TEMP_BUILD_ARRAY_GETTABLE_INDEX)]]]]",
+
+
+            "array_shift":""+
+                "[set_quoted (TEMP_ARRAY_SHIFT_LOC) [argument]]"+
+                "[set (TEMP_ARRAY_SHIFT_INDEX) [argument [count [count]]]]"+
+                #"[set (TEMP_ARRAY_SHIFT_INDEX)
+                #"[set (TEMP_ARRAY_SHIFT_CURRENT) [- [length [value [value (TEMP_ARRAY_SHIFT_LOC)]]] [dequotable \"1\"]]]"+
+                "[set (TEMP_ARRAY_SHIFT_CURRENT) [length [value [value (TEMP_ARRAY_SHIFT_LOC)]]]]"+
+                "[recursive_array_shift]",
+
+            "recursive_array_shift":""+
+                "[if [>= [value (TEMP_ARRAY_SHIFT_CURRENT)] [value (TEMP_ARRAY_SHIFT_INDEX)]] [runnable [concept (array_shift_function_dispatch)]]]",
+
+            "array_shift_function_dispatch":"[if [= [value (TEMP_ARRAY_SHIFT_CURRENT)] [value (TEMP_ARRAY_SHIFT_INDEX)]] [runnable [concept (array_shift_function_equal)]] [runnable [concept (array_shift_function_normal)]]]",
+
+
+            "array_shift_function_normal":""+
+                "[set [get [build_array_gettable [value (TEMP_ARRAY_SHIFT_LOC)] [value (TEMP_ARRAY_SHIFT_CURRENT)]]] [value [get [build_array_gettable [value (TEMP_ARRAY_SHIFT_LOC)] [- [value (TEMP_ARRAY_SHIFT_CURRENT)] [dequotable \"1\"]]]]]]"+
+                "[set (TEMP_ARRAY_SHIFT_CURRENT) [- [value (TEMP_ARRAY_SHIFT_CURRENT)] [dequotable \"1\"]]]"+
+                "[recursive_array_shift]",
+
+            "array_shift_function_equal":""+
+                "[set [get [build_array_gettable [value (TEMP_ARRAY_SHIFT_LOC)] [value (TEMP_ARRAY_SHIFT_CURRENT)]]] \"\"]"+
+                "[set (TEMP_ARRAY_SHIFT_CURRENT) [- [value (TEMP_ARRAY_SHIFT_CURRENT)] [dequotable \"1\"]]]"+
+                "[recursive_array_shift]",
+            
 
             # future concepts:
             # break concept (stops current concept)
