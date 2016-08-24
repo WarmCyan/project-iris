@@ -595,5 +595,8 @@ class IntelligencePlatform:
             argsString = ""
             for argument in concept[1]:
                 argsString += " " + str(argument)
+
+            # trim extra space at beginning
+            argsString = argsString[1:]
             
             self.entity.Memory[mapStorage][indexString]["args"] = argsString
