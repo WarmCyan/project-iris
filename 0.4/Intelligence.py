@@ -184,7 +184,7 @@ class Intelligence:
                 "[recursive_reconstruct]" +
                 "[return [value (TEMP_RECURSIVE_RECONSTRUCT_STRING)]]", #takes args, sets memory data, then just calls recursive construct without any args
             
-            "recursive_reconstruct":"[if [<= [value (TEMP_RECURSIVE_RECONSTRUCT_INDEX)] [length [value (TEMP_RECURSIVE_RECONSTRUCT_MAPLOC)]]] [runnable [concept (recursive_reconstruct_build)]]]",
+            "recursive_reconstruct":"[if [< [value (TEMP_RECURSIVE_RECONSTRUCT_INDEX)] [length [value (TEMP_RECURSIVE_RECONSTRUCT_MAPLOC)]]] [runnable [concept (recursive_reconstruct_build)]]]",
 
 
             # temp recursive reconstruct index
@@ -192,7 +192,7 @@ class Intelligence:
             # temp recursive reconstruct map loc
  
             "recursive_reconstruct_build":"" +
-                "[set (TEMP_RECURSIVE_RECONSTRUCT_STRING) [concat [value (TEMP_RECURSIVE_RECONSTRUCT_STRING)] [reconstruct_map_index [value (TEMP_RECURSIVE_RECONSTRUCT_INDEX)] [value (TEMP_RECURSIVE_RECONSTRUCT_MAPLOC)]]]]" +
+                "[set_quoted (TEMP_RECURSIVE_RECONSTRUCT_STRING) [concat [value (TEMP_RECURSIVE_RECONSTRUCT_STRING)] [reconstruct_map_index [value (TEMP_RECURSIVE_RECONSTRUCT_INDEX)] [value (TEMP_RECURSIVE_RECONSTRUCT_MAPLOC)]]]]" +
                 "[set (TEMP_RECURSIVE_RECONSTRUCT_INDEX) [count [value (TEMP_RECURSIVE_RECONSTRUCT_INDEX)]]]" +
                 "[recursive_reconstruct]",
 
