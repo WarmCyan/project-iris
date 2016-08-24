@@ -69,9 +69,14 @@ class Intelligence:
             
             #"self":"[map_concept (self) (SELFMAP)][print [reconstruct_map_index [quotable [count]] (SELFMAP)]]", # NOTE: AAWWWWWWWWWWW YEAAAAAAAAAAAAAAHHHHHHHHHH
 
-            "self":"[if [dequotable \"True\"] [runnable [concept (print)] \"It's true!\"] [runnable [concept (print)] \"It's a dirty lie!\"]]",
-            
+            #"self":"[if [dequotable \"True\"] [runnable [concept (print)] \"It's true!\"] [runnable [concept (print)] \"It's a dirty lie!\"]]",
             #"self":"[print [concat [dequotable \"hello\"] [dequotable \" world\"]]]", 
+
+            #"self":"[if [= \"5\" \"6\"] [runnable [concept (print)] \"They equal!\"] [runnable [concept (print)] \"They don't equal :(\"]]",
+
+            #"self":"[print [length (dictionary)]]",
+
+            "self":"[map_concept (self) (SELFMAP)][print [reconstruct (SELFMAP)]]",
 
             
             # TODO: sincerely think about making current set "copy" and set_quoted the actual set? 
@@ -94,6 +99,14 @@ class Intelligence:
             "query":"",
             "remember":"",
             "recall":"",
+
+            # BOOLEAN CONCEPTS
+            "=":"[python \"self.CacheStore(eval(str(self.CacheRetrieve(0, -1)) + \" == \" + str(self.CacheRetrieve(1, -1))), -2)\"]",
+            "<":"[python \"self.CacheStore(eval(str(self.CacheRetrieve(0, -1)) + \" < \" + str(self.CacheRetrieve(1, -1))), -2)\"]",
+            ">":"[python \"self.CacheStore(eval(str(self.CacheRetrieve(0, -1)) + \" > \" + str(self.CacheRetrieve(1, -1))), -2)\"]",
+            "<=":"[python \"self.CacheStore(eval(str(self.CacheRetrieve(0, -1)) + \" <= \" + str(self.CacheRetrieve(1, -1))), -2)\"]",
+            ">=":"[python \"self.CacheStore(eval(str(self.CacheRetrieve(0, -1)) + \" >= \" + str(self.CacheRetrieve(1, -1))), -2)\"]",
+            "!=":"[python \"self.CacheStore(eval(str(self.CacheRetrieve(0, -1)) + \" != \" + str(self.CacheRetrieve(1, -1))), -2)\"]",
 
             # CORE CONCEPTS
             "value":"[python \"self.CacheStore(eval(self.CacheRetrieve(0, -1)), -2)\"]",
@@ -118,7 +131,9 @@ class Intelligence:
             "concat":"[python \"self.CacheStore(str(self.CacheRetrieve(0, -1)) + str(self.CacheRetrieve(1, -1)), -2)\"]",
 
 
-            "if":"[python \"if (eval(self.CacheRetrieve(0, -1)) == True):self.RunConceptExecute(self.CacheRetrieve(1, -1))\nelif self.CacheRetrieve(2, -1) != None:self.RunConceptExecute(self.CacheRetrieve(2, -1))\"]",
+            "if":"[python \"if (eval(str(self.CacheRetrieve(0, -1))) == True):self.RunConceptExecute(self.CacheRetrieve(1, -1))\nelif self.CacheRetrieve(2, -1) != None:self.RunConceptExecute(self.CacheRetrieve(2, -1))\"]",
+
+            "length":"[python \"self.CacheStore(len(eval(self.CacheRetrieve(0, -1)).keys()), -2)\"]",
             
 
             # META CORE
@@ -160,6 +175,29 @@ class Intelligence:
                 "[set_quoted (TEMP_RECONSTRUCT_MAP_LOC) [argument [count [count]]]]" +
                 "[set (TEMP_RECONSTRUCT_MAP_ADDITIVE) [argument [count [count [count]]]]]" + 
                 "[return [referable [concept [value (TEMP_RECONSTRUCT_MAP_LOC)]] [referable [value (TEMP_RECONSTRUCT_MAP_INDEX)] [referable [value (TEMP_RECONSTRUCT_MAP_ADDITIVE)]]]]]",
+
+
+            "reconstruct":"" + 
+                "[set (TEMP_RECURSIVE_RECONSTRUCT_INDEX) [count]]" +
+                "[set_quoted (TEMP_RECURSIVE_RECONSTRUCT_MAPLOC) [argument]]" + 
+                "[set (TEMP_RECURSIVE_RECONSTRUCT_STRING) \"\"]" +
+                "[recursive_reconstruct]" +
+                "[return [value (TEMP_RECURSIVE_RECONSTRUCT_STRING)]]", #takes args, sets memory data, then just calls recursive construct without any args
+            
+            "recursive_reconstruct":"[if [<= [value (TEMP_RECURSIVE_RECONSTRUCT_INDEX)] [length [value (TEMP_RECURSIVE_RECONSTRUCT_MAPLOC)]]] [runnable [concept (recursive_reconstruct_build)]]]",
+
+
+            # temp recursive reconstruct index
+            # temp recursive reconstruct string
+            # temp recursive reconstruct map loc
+ 
+            "recursive_reconstruct_build":"" +
+                "[set (TEMP_RECURSIVE_RECONSTRUCT_STRING) [concat [value (TEMP_RECURSIVE_RECONSTRUCT_STRING)] [reconstruct_map_index [value (TEMP_RECURSIVE_RECONSTRUCT_INDEX)] [value (TEMP_RECURSIVE_RECONSTRUCT_MAPLOC)]]]]" +
+                "[set (TEMP_RECURSIVE_RECONSTRUCT_INDEX) [count [value (TEMP_RECURSIVE_RECONSTRUCT_INDEX)]]]" +
+                "[recursive_reconstruct]",
+
+
+
 
             # future concepts:
             # break concept (stops current concept)
