@@ -59,6 +59,7 @@ class IntelligencePlatform:
     argNum = []
 
     timeStack = []
+    # TODO: add cycle execution times as well?
 
     logFP = None
     platformLogFP = None

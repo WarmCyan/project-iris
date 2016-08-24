@@ -129,13 +129,27 @@ class Intelligence:
             #"map_concept":"[set (TEMP_ARG_0) [argument]][set (TEMP_MAP_CONCEPT) [value [value (TEMP_ARG_0)]]]",
             #"map_concept":"[set (TEMP_ARG_0) [argument]][set (TEMP_MAP_CONCEPT) [quotable [value (TEMP_ARG_0)]]]",
             #"map_concept":"[set_quoted (TEMP_ARG_0) [argument]][set (TEMP_MAP_CONCEPT) [quotable [value (TEMP_ARG_0)]]]",
-            "map_concept":"[set_quoted (TEMP_ARG_0) [argument]][set (TEMP_MAP_CONCEPT) [value (TEMP_ARG_0)]][set_quoted (TEMP_ARG_1) [argument [count [count]]]][set_quoted (TEMP_MAP_LOC) [concept [value (TEMP_ARG_1)]]][python \"self.METAMapConcept()\"]",
+            "map_concept":"" +
+                "[set_quoted (TEMP_ARG_0) [argument]]" +
+                "[set (TEMP_MAP_CONCEPT) [value (TEMP_ARG_0)]]" +
+                "[set_quoted (TEMP_ARG_1) [argument [count [count]]]]" +
+                "[set_quoted (TEMP_MAP_LOC) [concept [value (TEMP_ARG_1)]]]" +
+                "[python \"self.METAMapConcept()\"]",
 
             #"reconstruct":"[
 
-            "reconstruct_map_index":"[set (TEMP_RECONSTRUCT_MAP_INDEX) [argument]][set_quoted (TEMP_RECONSTRUCT_MAP_LOC) [argument [count [count]]]][set_quoted (STORED_GETABLE_0) [reconstruct_map_index_gettable [value (TEMP_RECONSTRUCT_MAP_INDEX)] [value (TEMP_RECONSTRUCT_MAP_LOC)] \"concept\"]][set_quoted (STORED_GETABLE_1) [reconstruct_map_index_gettable [value (TEMP_RECONSTRUCT_MAP_INDEX)] [value (TEMP_RECONSTRUCT_MAP_LOC)] \"args\"]][return [runnable [value [get [value (STORED_GETABLE_0)]]] [value [get [value (STORED_GETABLE_1)]]]]]",
+            "reconstruct_map_index":"" + 
+                "[set (TEMP_RECONSTRUCT_MAP_INDEX) [argument]]" +
+                "[set_quoted (TEMP_RECONSTRUCT_MAP_LOC) [argument [count [count]]]]" +
+                "[set_quoted (STORED_GETABLE_0) [reconstruct_map_index_gettable [value (TEMP_RECONSTRUCT_MAP_INDEX)] [value (TEMP_RECONSTRUCT_MAP_LOC)] \"concept\"]]" + 
+                "[set_quoted (STORED_GETABLE_1) [reconstruct_map_index_gettable [value (TEMP_RECONSTRUCT_MAP_INDEX)] [value (TEMP_RECONSTRUCT_MAP_LOC)] \"args\"]]" + 
+                "[return [runnable [value [get [value (STORED_GETABLE_0)]]] [value [get [value (STORED_GETABLE_1)]]]]]",
 
-            "reconstruct_map_index_gettable":"[set (TEMP_RECONSTRUCT_MAP_INDEX) [argument]][set_quoted (TEMP_RECONSTRUCT_MAP_LOC) [argument [count [count]]]][set (TEMP_RECONSTRUCT_MAP_ADDITIVE) [argument [count [count [count]]]]][return [referable [concept [value (TEMP_RECONSTRUCT_MAP_LOC)]] [referable [value (TEMP_RECONSTRUCT_MAP_INDEX)] [referable [value (TEMP_RECONSTRUCT_MAP_ADDITIVE)]]]]]",
+            "reconstruct_map_index_gettable":"" +
+                "[set (TEMP_RECONSTRUCT_MAP_INDEX) [argument]]" +
+                "[set_quoted (TEMP_RECONSTRUCT_MAP_LOC) [argument [count [count]]]]" +
+                "[set (TEMP_RECONSTRUCT_MAP_ADDITIVE) [argument [count [count [count]]]]]" + 
+                "[return [referable [concept [value (TEMP_RECONSTRUCT_MAP_LOC)]] [referable [value (TEMP_RECONSTRUCT_MAP_INDEX)] [referable [value (TEMP_RECONSTRUCT_MAP_ADDITIVE)]]]]]",
 
             # future concepts:
             # break concept (stops current concept)
