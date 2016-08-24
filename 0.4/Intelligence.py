@@ -77,8 +77,9 @@ class Intelligence:
             #"self":"[print [length (dictionary)]]",
 
             #"self":"[map_concept (self) (SELFMAP)][print [reconstruct (SELFMAP)]]",
-            #"self":"[map_concept (map_concept) (SELFMAP)][print [reconstruct (SELFMAP)]]",
-            "self":"[map_concept (self) (SELFMAP)][array_shift (SELFMAP) [count [count]]][print [value (SELFMAP)]]",
+            "self":"[map_concept (map_concept) (SELFMAP)][print [reconstruct (SELFMAP)]]",
+            
+            #"self":"[map_concept (self) (SELFMAP)][array_shift (SELFMAP) [count [count]]][print [value (SELFMAP)]]",
 
             
             # TODO: sincerely think about making current set "copy" and set_quoted the actual set? 
