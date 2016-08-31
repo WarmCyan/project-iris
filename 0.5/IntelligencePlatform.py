@@ -57,7 +57,7 @@ class IntelligencePlatform:
     level = 0
     cache = []
     argNum = []
-    graphMode = "graphonly"
+    graphMode = "nograph"
 
     timeStack = []
     # TODO: add cycle execution times as well?
@@ -426,6 +426,8 @@ class IntelligencePlatform:
 
         conceptList = self.ParseConcepts(conceptString, indent)
 
+        connection_flag = False # set to true if graphing mode and connection was found
+
         for concept in conceptList:
             self.Log(indent + "CONCEPT: " + concept[0], LOG_SYNTAX)
 
@@ -473,7 +475,8 @@ class IntelligencePlatform:
                 self.argNum[self.level] += 1
 
             # execute concept
-            if concept[0] == "python" and self.graphMode != "graphonly":
+            #if (concept[0] == "python" and (self.graphMode != "graphonly" or self.level != self.graphLevel)) or (concept[0] == "sudo"):
+            if concept[0] == "python" and not connection_flag: #or concept[0] == "sudo":
                 #if not self.entityRunning: return
 
                 code = concept[1][0][1:-1]
@@ -486,9 +489,13 @@ class IntelligencePlatform:
                     self.continueSelf = True
                     return
 
-                if self.graphMode == "graphonly" and concept[0] != "connection":
-                    continue
+                #if self.graphMode == "graphonly" and concept[0] != "connection" and self.level == self.graphLevel:
+                    #continue
+                if self.graphMode == "graphonly" and concept[0] == "connection":
+                    connection_flag = True
                 if self.graphMode == "nograph" and concept[0] == "connection":
+                    continue
+                if self.graphMode == "graphonly" and connection_flag and concept[0] != "connection":
                     continue
                 
                 self.Log(indent + "[" + str(self.level) + "](executing concept '" + concept[0] + "')", LOG_EXECUTION)

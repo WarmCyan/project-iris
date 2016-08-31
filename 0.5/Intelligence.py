@@ -87,7 +87,7 @@ class Intelligence:
 
 
 
-            "self":"[graph (mutate)]",
+            "self":"[graph (MAGRAPH) (mutate)]",
             
             
             # TODO: sincerely think about making current set "copy" and set_quoted the actual set? 
@@ -106,7 +106,7 @@ class Intelligence:
 
 
             
-            "mutate":"[connection (needs) (referable)][connection (is) (thing)][[print [dequotable \"mutating!\"]]", # theoretically, this needs some kind of way to list all the available concepts.
+            "mutate":"[connection (needs) (referable)][connection (is) (thing)][print [dequotable \"mutating!\"]]", # theoretically, this needs some kind of way to list all the available concepts.
             "query":"",
             "remember":"",
             "recall":"",
@@ -172,10 +172,11 @@ class Intelligence:
 
 
             "graph":""+
-                "[python \"self.graphMode = 'graphonly'\"]"+
                 "[set_quoted (TEMP_BUILDING_GRAPH_LOC) [argument]]"+
                 "[set_quoted (TEMP_BUILDING_GRAPH_CONCEPT) [argument [count [count]]]]"+
-                "[run [concept (TEMP_BUILDING_GRAPH_CONCEPT)]]"
+                "[python \"self.graphMode = 'graphonly'\"]"+
+                #"[sudo \"self.RunConceptExecute(eval(str(self.entity.Memory['TEMP_BUILDING_GRAPH_CONCEPT'])))\"]"+
+                "[run [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]]]"
                 "[python \"self.graphMode = 'nograph'\"]",
 
 
@@ -306,12 +307,16 @@ class Intelligence:
             # concept and TEMP_BUILDING_GRAPH_CONCEPT is the LITERAL CONCEPT
             # NAME that we're adding the connection properties to 
             "connection":""+
-                "[set [build_connection_gettable \"type\"] [argument]]"+
-                "[set [build_connection_gettable \"end\"] [argument [count [count]]]]",
+                "[set_quoted (TEMP_CONNECTION_TYPE) [argument]]"+
+                "[set_quoted (TEMP_CONNECTION_END) [argument [count [count]]]]"+
+                "[set [get [build_connection_gettable \"type\"]] [quotable [concept [value (TEMP_CONNECTION_TYPE)]]]]"+
+                "[set [get [build_connection_gettable \"end\"]] [quotable [concept [value (TEMP_CONNECTION_END)]]]]",
 
             "build_connection_gettable":""+
                 "[set (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE) [argument]]"+
-                "[return [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [value (TEMP_BUILDING_GRAPH_CONCEPT) [referable [value (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE)]]]]]]",
+                "[set_quoted (TEMP_BUILD_CONNECTION_GETTABLE_TOINDEX) [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]]]]]"+
+                "[set_quoted (TEMP_BUILD_CONNECTION_GETTABLE_INDEX) [count [length [get [value (TEMP_BUILD_CONNECTION_GETTABLE_TOINDEX)]]]]]"+
+                "[return [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]] [referable [value (TEMP_BUILD_CONNECTION_GETTABLE_INDEX)]] [referable [value (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE)]]]]]",
                 
 
 
