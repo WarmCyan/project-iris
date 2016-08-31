@@ -82,8 +82,8 @@ class Intelligence:
             #"self":"[map_concept (self) (SELFMAP)][array_shift (SELFMAP) [count [count]]][print [value (SELFMAP)]]",
 
 
-            "self":"[loop [dequotable \"0\"] [dequotable \"5\"] [runnable [concept (+)] [concat [runnable [concept (argument)]] [concat [dequotable \" \"] [runnable [concept (argument)] [runnable [concept (count)] [runnable [concept (count)]]]]]] [runnable [concept (loopTest)] [runnable [concept (argument)]]]]",
-            "loopTest":"[display \"LOOP:\"][display [argument]]",
+            "self":"[loop [dequotable \"0\"] [dequotable \"5\"] [runnable [concept (+)] [concat [runnable [concept (argument)]] [concat [dequotable \" \"] [runnable [concept (argument)] [runnable [concept (count)] [runnable [concept (count)]]]]]]] [runnable [concept (loopTest)] [runnable [concept (argument)]]]]",
+            "loopTest":"[print \"LOOP:\"][print [value (TEMP_LOOP_INDEX)]]",
             
             # TODO: sincerely think about making current set "copy" and set_quoted the actual set? 
             # NOTE: ^ if you think about it, it makes more sense to just have a
@@ -267,8 +267,15 @@ class Intelligence:
                 "[set (TEMP_LOOP_INDEX) [argument]]"+
                 "[set (TEMP_LOOP_END) [argument [count [count]]]]"+
                 "[set_quoted (TEMP_LOOP_OPERATION) [argument [count [count [count]]]]]"+
-                "[set_quoted (TEMP_LOOP_RUN) [argument [count [count [count [count]]]]]]",
+                "[set_quoted (TEMP_LOOP_RUN) [argument [count [count [count [count]]]]]]"+
+                "[loop_recurse]",
+
+            "loop_recurse":"[if [!= [value (TEMP_LOOP_INDEX)] [value (TEMP_LOOP_END)]] [runnable [concept (loop_recurse_run)]]]",
             
+            "loop_recurse_run":""+
+                "[run [value (TEMP_LOOP_RUN)]]"+
+                "[set (TEMP_LOOP_INDEX) [run [runnable [value (TEMP_LOOP_OPERATION)] [concat [value (TEMP_LOOP_INDEX)] \"1\"]]]]"+
+                "[loop_recurse]",
 
             # future concepts:
             # break concept (stops current concept)
