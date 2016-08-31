@@ -473,32 +473,33 @@ class IntelligencePlatform:
                 self.argNum[self.level] += 1
 
             # execute concept
-            #if self.graphMode == "graphonly":
-            #    if concept[0] == "connection":
-                    
-            #else:
-                if concept[0] == "python":
-                    #if not self.entityRunning: return
+            if concept[0] == "python" and self.graphMode != "graphonly":
+                #if not self.entityRunning: return
 
-                    code = concept[1][0][1:-1]
-                    self.Log(indent + "EXECUTING: '" + code + "'", LOG_SYNTAX)
-                    exec(code)
-                else:
-                    runstring = self.entity.Memory[concept[0]]
+                code = concept[1][0][1:-1]
+                self.Log(indent + "EXECUTING: '" + code + "'", LOG_SYNTAX)
+                exec(code)
+            else:
+                runstring = self.entity.Memory[concept[0]]
 
-                    if runstring == "[self]":
-                        self.continueSelf = True
-                        return
-                    
-                    self.Log(indent + "[" + str(self.level) + "](executing concept '" + concept[0] + "')", LOG_EXECUTION)
-                    self.level += 1
-                    self.timeStack.append(time.clock()) # TIMING
-                    self.RunConceptExecute(runstring)
-                    if not self.entityRunning: return
-                    runTime = (time.clock() - self.timeStack.pop()) * 1000
-                    self.level -= 1
-                    self.Log(indent + "[" + str(self.level) + "](concept '" + concept[0] + "' execution: ......... " + str(runTime) + " ms)", LOG_TIMING)
-                    self.CacheClear()
+                if runstring == "[self]" and self.graphMode != "graphonly":
+                    self.continueSelf = True
+                    return
+
+                if self.graphMode == "graphonly" and concept[0] != "connection":
+                    continue
+                if self.graphMode == "nograph" and concept[0] == "connection":
+                    continue
+                
+                self.Log(indent + "[" + str(self.level) + "](executing concept '" + concept[0] + "')", LOG_EXECUTION)
+                self.level += 1
+                self.timeStack.append(time.clock()) # TIMING
+                self.RunConceptExecute(runstring)
+                if not self.entityRunning: return
+                runTime = (time.clock() - self.timeStack.pop()) * 1000
+                self.level -= 1
+                self.Log(indent + "[" + str(self.level) + "](concept '" + concept[0] + "' execution: ......... " + str(runTime) + " ms)", LOG_TIMING)
+                self.CacheClear()
 
 
     # verifies appropriate structures exist in cache, then stores object in cache based on level

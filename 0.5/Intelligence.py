@@ -87,7 +87,7 @@ class Intelligence:
 
 
 
-            "self":"[mutate]",
+            "self":"[graph (mutate)]",
             
             
             # TODO: sincerely think about making current set "copy" and set_quoted the actual set? 
@@ -168,6 +168,18 @@ class Intelligence:
             "dequotable":"[python \"self.CacheStore(str(self.CacheRetrieve(0, -1))[1:-1], -2)\"]",
 
             # META META CORE NOTE: these may have dependencies!
+
+
+
+            "graph":""+
+                "[python \"self.graphMode = 'graphonly'\"]"+
+                "[set_quoted (TEMP_BUILDING_GRAPH_LOC) [argument]]"+
+                "[set_quoted (TEMP_BUILDING_GRAPH_CONCEPT) [argument [count [count]]]]"+
+                "[run [concept (TEMP_BUILDING_GRAPH_CONCEPT)]]"
+                "[python \"self.graphMode = 'nograph'\"]",
+
+
+            
             
             #"map_concept":"[set (TEMP_ARG_0) [argument]][set (TEMP_MAP_CONCEPT) [value [value (TEMP_ARG_0)]]]",
             #"map_concept":"[set (TEMP_ARG_0) [argument]][set (TEMP_MAP_CONCEPT) [quotable [value (TEMP_ARG_0)]]]",
