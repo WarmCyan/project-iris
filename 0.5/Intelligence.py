@@ -82,8 +82,13 @@ class Intelligence:
             #"self":"[map_concept (self) (SELFMAP)][array_shift (SELFMAP) [count [count]]][print [value (SELFMAP)]]",
 
 
-            "self":"[loop [dequotable \"0\"] [dequotable \"5\"] [runnable [concept (+)] [concat [runnable [concept (argument)]] [concat [dequotable \" \"] [runnable [concept (argument)] [runnable [concept (count)] [runnable [concept (count)]]]]]]] [runnable [concept (loopTest)] [runnable [concept (argument)]]]]",
-            "loopTest":"[print \"LOOP:\"][print [value (TEMP_LOOP_INDEX)]]",
+            #"self":"[loop [dequotable \"0\"] [dequotable \"5\"] [runnable [concept (+)] [concat [runnable [concept (argument)]] [concat [dequotable \" \"] [runnable [concept (argument)] [runnable [concept (count)] [runnable [concept (count)]]]]]]] [runnable [concept (loopTest)] [runnable [concept (argument)]]]]",
+            #"loopTest":"[print \"LOOP:\"][print [value (TEMP_LOOP_INDEX)]]",
+
+
+
+            "self":"[mutate]",
+            
             
             # TODO: sincerely think about making current set "copy" and set_quoted the actual set? 
             # NOTE: ^ if you think about it, it makes more sense to just have a
@@ -101,7 +106,7 @@ class Intelligence:
 
 
             
-            "mutate":"", # theoretically, this needs some kind of way to list all the available concepts.
+            "mutate":"[connection (needs) (referable)][connection (is) (thing)][[print [dequotable \"mutating!\"]]", # theoretically, this needs some kind of way to list all the available concepts.
             "query":"",
             "remember":"",
             "recall":"",
@@ -263,26 +268,43 @@ class Intelligence:
             # 1 - number to end at
             # 2 - operation for number (should be REFERENCE to concept of operation?)
             # 3 - function to run
-            "loop":""+
-                "[set (TEMP_LOOP_INDEX) [argument]]"+
-                "[set (TEMP_LOOP_END) [argument [count [count]]]]"+
-                "[set_quoted (TEMP_LOOP_OPERATION) [argument [count [count [count]]]]]"+
-                "[set_quoted (TEMP_LOOP_RUN) [argument [count [count [count [count]]]]]]"+
-                "[loop_recurse]",
+            #"loop":""+
+                #"[set (TEMP_LOOP_INDEX) [argument]]"+
+                #"[set (TEMP_LOOP_END) [argument [count [count]]]]"+
+                #"[set_quoted (TEMP_LOOP_OPERATION) [argument [count [count [count]]]]]"+
+                #"[set_quoted (TEMP_LOOP_RUN) [argument [count [count [count [count]]]]]]"+
+                #"[loop_recurse]",
 
-            "loop_recurse":"[if [!= [value (TEMP_LOOP_INDEX)] [value (TEMP_LOOP_END)]] [runnable [concept (loop_recurse_run)]]]",
+            #"loop_recurse":"[if [!= [value (TEMP_LOOP_INDEX)] [value (TEMP_LOOP_END)]] [runnable [concept (loop_recurse_run)]]]",
             
-            "loop_recurse_run":""+
-                "[run [value (TEMP_LOOP_RUN)]]"+
-                "[set (TEMP_LOOP_INDEX) [run [runnable [value (TEMP_LOOP_OPERATION)] [concat [value (TEMP_LOOP_INDEX)] \"1\"]]]]"+
-                "[loop_recurse]",
+            #"loop_recurse_run":""+
+                #"[run [value (TEMP_LOOP_RUN)]]"+
+                #"[set (TEMP_LOOP_INDEX) [run [runnable [value (TEMP_LOOP_OPERATION)] [concat [value (TEMP_LOOP_INDEX)] \"1\"]]]]"+
+                #"[loop_recurse]",
 
             # future concepts:
             # break concept (stops current concept)
 
 
             # concept map testing 
-            "connection":"",
+            # TODO: find a way to pass in get reference hierarchy as reference
+            # to graph location
+            # TODO: or potentially find a way to post-add to a reference chain?
+            # NOTE: assumes that TEMP_BUILDING_GRAPH_LOC is a REFERENCE to graph (NOTE: unfortunately this only takes base level concepts....)
+            # concept and TEMP_BUILDING_GRAPH_CONCEPT is the LITERAL CONCEPT
+            # NAME that we're adding the connection properties to 
+            "connection":""+
+                "[set [build_connection_gettable \"type\"] [argument]]"+
+                "[set [build_connection_gettable \"end\"] [argument [count [count]]]]",
+
+            "build_connection_gettable":""+
+                "[set (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE) [argument]]"+
+                "[return [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [value (TEMP_BUILDING_GRAPH_CONCEPT) [referable [value (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE)]]]]]]",
+                
+
+
+
+
             "depth":"[python \"self.CacheStore(self.level - 1, -2)\"]", # this returns the level of the CONCEPT THAT CALLED IT
             
             # TESTING CONCEPTS
