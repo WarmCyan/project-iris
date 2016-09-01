@@ -87,7 +87,8 @@ class Intelligence:
 
 
 
-            "self":"[graph (MAGRAPH) (mutate)]",
+            #"self":"[graph (MAGRAPH) (mutate)]",
+            "self":"[graph (MAGRAPH) (mutate)][print [value (MAGRAPH)]]",
             
             
             # TODO: sincerely think about making current set "copy" and set_quoted the actual set? 
@@ -131,7 +132,8 @@ class Intelligence:
             #"set":"[python \"exec(self.CacheRetrieve(0, -1) + \" = \" + self.CacheRetrieve(1, -1))\"]",
             "set":"[python \"exec(str(self.CacheRetrieve(0, -1)) + \" = \" + str(self.CacheRetrieve(1, -1)))\"]",
 
-            "set_quoted":"[python \"exec(self.CacheRetrieve(0, -1) + \" = '\" + self.CacheRetrieve(1, -1) + \"'\")\"]", # NOTE: this is because if something is passed as an argument, impossible to quote what's there (quotable doesn't work, because argument is a sublevel deep) # TODO: find a better way of doing this!!!
+            #"set_quoted":"[python \"exec(self.CacheRetrieve(0, -1) + \" = '\" + self.CacheRetrieve(1, -1) + \"'\")\"]", # NOTE: this is because if something is passed as an argument, impossible to quote what's there (quotable doesn't work, because argument is a sublevel deep) # TODO: find a better way of doing this!!!
+            "set_quoted":"[python \"exec(str(self.CacheRetrieve(0, -1)) + \" = '\" + str(self.CacheRetrieve(1, -1)) + \"'\")\"]", # NOTE: this is because if something is passed as an argument, impossible to quote what's there (quotable doesn't work, because argument is a sublevel deep) # TODO: find a better way of doing this!!!
 
             
             "get":"[python \"self.RunConceptGet(self.CacheRetrieve(0, -1));self.CacheStore(self.CacheRetrieve(1, -1), -2)\"]",
@@ -151,7 +153,8 @@ class Intelligence:
 
             "if":"[python \"if (eval(str(self.CacheRetrieve(0, -1))) == True):self.RunConceptExecute(self.CacheRetrieve(1, -1))\nelif self.CacheRetrieve(2, -1) != None:self.RunConceptExecute(self.CacheRetrieve(2, -1))\"]",
 
-            "length":"[python \"self.CacheStore(len(eval(str(self.CacheRetrieve(0, -1))).keys()), -2)\"]",
+            #"length":"[python \"self.CacheStore(len(eval(str(self.CacheRetrieve(0, -1))).keys()), -2)\"]",
+            "length":"[python \"try: self.CacheStore(len(eval(str(self.CacheRetrieve(0, -1))).keys()), -2)\nexcept: self.CacheStore(0, -2)\"]",
             
 
             # META CORE
@@ -309,14 +312,18 @@ class Intelligence:
             "connection":""+
                 "[set_quoted (TEMP_CONNECTION_TYPE) [argument]]"+
                 "[set_quoted (TEMP_CONNECTION_END) [argument [count [count]]]]"+
+                "[set_quoted (TEMP_CONNCECTION_INDEX) [length [get [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]]]]]]]"+
                 "[set [get [build_connection_gettable \"type\"]] [quotable [concept [value (TEMP_CONNECTION_TYPE)]]]]"+
                 "[set [get [build_connection_gettable \"end\"]] [quotable [concept [value (TEMP_CONNECTION_END)]]]]",
 
             "build_connection_gettable":""+
                 "[set (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE) [argument]]"+
-                "[set_quoted (TEMP_BUILD_CONNECTION_GETTABLE_TOINDEX) [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]]]]]"+
-                "[set_quoted (TEMP_BUILD_CONNECTION_GETTABLE_INDEX) [count [length [get [value (TEMP_BUILD_CONNECTION_GETTABLE_TOINDEX)]]]]]"+
-                "[return [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]] [referable [value (TEMP_BUILD_CONNECTION_GETTABLE_INDEX)]] [referable [value (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE)]]]]]",
+                "[return [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]] [referable [value (TEMP_CONNCECTION_INDEX)] [referable [value (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE)]]]]]]",
+
+                #"[set_quoted (TEMP_BUILD_CONNECTION_GETTABLE_TOINDEX) [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]]]]]"+
+                #"[set_quoted (TEMP_BUILD_CONNECTION_GETTABLE_INDEX) [count [length [get [value (TEMP_BUILD_CONNECTION_GETTABLE_TOINDEX)]]]]]"+
+
+                #"[return [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]] [referable [value (TEMP_BUILD_CONNECTION_GETTABLE_INDEX)]] [referable [value (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE)]]]]]",
                 
 
 

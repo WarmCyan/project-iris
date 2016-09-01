@@ -439,7 +439,8 @@ class IntelligencePlatform:
             for argument in concept[1]:
                 self.Log(indent + "  ARGUMENT: " + str(argument), LOG_SYNTAX)
 
-                #if not self.entityRunning: return
+                if self.graphMode == "nograph" and concept[0] == "connection":
+                    continue
 
                 # execute argument 
                 if argument.startswith("["):
