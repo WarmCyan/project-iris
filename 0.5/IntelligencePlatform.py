@@ -37,13 +37,13 @@ LOG_DIALOG_COLOR = "white"
 LOG_PAUSE_TIME = .1 # the amount of time to pause if logging is off to simulate when actually logging (slows down the intelligence significantly so it doesn't immediately jump to completion when logging is turned off)
 
 # log switches
-logCacheOn = True
-logCacheDetailOn = True
-logConceptParseOn = True
-logIntelligenceOn = True
-logSyntaxOn = True
+logCacheOn = False
+logCacheDetailOn = False
+logConceptParseOn = False
+logIntelligenceOn = False
+logSyntaxOn = False
 logExecutionOn = True
-logTimingOn = True
+logTimingOn = False
 logErrorOn = True
 logPlatformOn = True
 logDialogOn = True
@@ -612,7 +612,7 @@ class IntelligencePlatform:
     # TEMP_ARG_0 is the REFERENCE to the desired concept NOTE: this shouldn't
     # even be used!!!!!!!!!
     # TEMP_MAP_CONCEPT is the VALUE of that concept
-    # TEMP_MAP_LOC is the place to store the map
+    # TEMP_MAP_LOC is the concept name of memory place to store the map
     def METAMapConcept(self):
         mapStorage = self.entity.Memory["TEMP_MAP_LOC"]
         conceptList = self.ParseConcepts(self.entity.Memory["TEMP_MAP_CONCEPT"])
@@ -634,3 +634,28 @@ class IntelligencePlatform:
             argsString = argsString[1:]
             
             self.entity.Memory[mapStorage][indexString]["args"] = argsString
+
+
+    # TEMP_FIND_CONNECTIONS_CONCEPT the concept from which the connections should be from
+    # TEMP_FIND_CONNECTIONS_TYPE is which "connection descriptor" to search for
+    # TEMP_FIND_CONNECTIONS_GRAPHLOC concept name of memory place of graph
+    def METAFindConnectionsByType(self):
+        graphStorage = eval(self.entity.Memory["TEMP_FIND_CONNECTIONS_GRAPHLOC"])
+        originatingConcept = self.entity.Memory["TEMP_FIND_CONNECTIONS_CONCEPT"]
+        desiredType = self.entity.Memory["TEMP_FIND_CONNECTIONS_TYPE"]
+        resultsStorage = eval(self.entity.Memory["TEMP_FIND_CONNECTIONS_RESULTLOC"])
+
+        resultsIndex = 0
+
+        for index in graphStorage[originatingConcept]:
+            entry = graphStorage[originatingConcept][index]
+            
+            if entry["reftype"] == "direct" and entry["type"] == desiredType:
+                resultsStorage[str(resultsIndex)] = str(entry["end"])
+                resultsIndex += 1
+
+
+
+
+
+

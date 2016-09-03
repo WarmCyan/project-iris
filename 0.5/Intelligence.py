@@ -93,10 +93,11 @@ class Intelligence:
             # NOTE: this is the insane test.....
             #"self":"[map_concept (mutate) (MUTATEMAP)][graph (MAGRAPH) (mutate)][print [reconstruct (MUTATEMAP)]]",
 
+            #"self":"[print [random [dequotable \"5\"] [dequotable \"10\"]]]",
 
-            "self":"[print [random [dequotable \"5\"] [dequotable \"10\"]]]",
-            
-            
+            # TODO: switch order of graph concept arguments
+            #"self":"[graph (MAGRAPH) (mutate)][print [findconnections (MAGRAPH) (mutate) (needs)]]",
+            "self":"[graph (MAGRAPH) (mutate)][findconnections_by_type (MAGRAPH) (mutate) (needs) (RESULTS)][print [value [get [build_array_gettable (RESULTS) [count]]]]]",
             
             # TODO: sincerely think about making current set "copy" and set_quoted the actual set? 
             # NOTE: ^ if you think about it, it makes more sense to just have a
@@ -113,7 +114,7 @@ class Intelligence:
             #   5. Randomly choose one to modify with the self string
 
 
-            
+
             "mutate":"[connection (needs) (referable)][connection (is) (thing)][print [dequotable \"mutating!\"]]", # theoretically, this needs some kind of way to list all the available concepts.
             "query":"",
             "remember":"",
@@ -345,11 +346,19 @@ class Intelligence:
                 "[set (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE) [argument]]"+
                 "[return [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_CONNECTION_END)]] [referable [value (TEMP_CONNCECTION_INDEX)] [referable [value (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE)]]]]]]",
 
-                #"[set_quoted (TEMP_BUILD_CONNECTION_GETTABLE_TOINDEX) [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]]]]]"+
-                #"[set_quoted (TEMP_BUILD_CONNECTION_GETTABLE_INDEX) [count [length [get [value (TEMP_BUILD_CONNECTION_GETTABLE_TOINDEX)]]]]]"+
 
-                #"[return [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]] [referable [value (TEMP_BUILD_CONNECTION_GETTABLE_INDEX)]] [referable [value (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE)]]]]]",
-               
+
+            "findconnections_by_type":""+
+                "[set_quoted (TEMP_ARG_0) [argument]]"+ # loc
+                "[set_quoted (TEMP_ARG_1) [argument [count [count]]]]"+ # concept
+                "[set_quoted (TEMP_ARG_2) [argument [count [count [count]]]]]"+ # type
+                "[set_quoted (TEMP_ARG_3) [argument [count [count [count [count]]]]]]"+ # where to store results
+                "[set_quoted (TEMP_FIND_CONNECTIONS_GRAPHLOC) [value (TEMP_ARG_0)]]"+
+                "[set_quoted (TEMP_FIND_CONNECTIONS_CONCEPT) [concept [value (TEMP_ARG_1)]]]"+
+                "[set_quoted (TEMP_FIND_CONNECTIONS_TYPE) [concept [value (TEMP_ARG_2)]]]"+
+                "[set_quoted (TEMP_FIND_CONNECTIONS_RESULTLOC) [value (TEMP_ARG_3)]]"+
+                "[set [value (TEMP_FIND_CONNECTIONS_RESULTLOC)] [dequotable \"{}\"]]"+ # ensures place exists
+                "[python \"self.METAFindConnectionsByType()\"]",
 
 
 
@@ -395,6 +404,9 @@ class Intelligence:
         print(eval(reference)) # 13
         exec(reference + " = 14")
         print(eval(reference)) # 14
+
+        # NOTE: you can TOTALLY do an eval statement and run [] keys on said
+        # statement
         
 
 
