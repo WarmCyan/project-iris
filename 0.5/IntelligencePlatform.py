@@ -8,6 +8,7 @@ import thread
 import Queue
 import sys
 import traceback
+import random
 
 # log types
 LOG_CACHE = "cache"
@@ -497,6 +498,7 @@ class IntelligencePlatform:
                 if self.graphMode == "nograph" and concept[0] == "connection":
                     continue
                 if self.graphMode == "graphonly" and connection_flag and concept[0] != "connection":
+                    self.CacheClear() # NOTE: don't actually know if this goes here or not...
                     continue
                 
                 self.Log(indent + "[" + str(self.level) + "](executing concept '" + concept[0] + "')", LOG_EXECUTION)

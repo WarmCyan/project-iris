@@ -88,7 +88,14 @@ class Intelligence:
 
 
             #"self":"[graph (MAGRAPH) (mutate)]",
-            "self":"[graph (MAGRAPH) (mutate)][print [value (MAGRAPH)]]",
+            #"self":"[graph (MAGRAPH) (mutate)][print [value (MAGRAPH)]]",
+
+            # NOTE: this is the insane test.....
+            #"self":"[map_concept (mutate) (MUTATEMAP)][graph (MAGRAPH) (mutate)][print [reconstruct (MUTATEMAP)]]",
+
+
+            "self":"[print [random [dequotable \"5\"] [dequotable \"10\"]]]",
+            
             
             
             # TODO: sincerely think about making current set "copy" and set_quoted the actual set? 
@@ -125,6 +132,7 @@ class Intelligence:
             "+":"[python \"self.CacheStore(eval(str(self.CacheRetrieve(0, -1)) + \" + \" + str(self.CacheRetrieve(1, -1))), -2)\"]",
             "*":"[python \"self.CacheStore(eval(str(self.CacheRetrieve(0, -1)) + \" * \" + str(self.CacheRetrieve(1, -1))), -2)\"]",
             "/":"[python \"self.CacheStore(eval(str(self.CacheRetrieve(0, -1)) + \" / \" + str(self.CacheRetrieve(1, -1))), -2)\"]",
+            "random":"[python \"self.CacheStore(random.randint(int(self.CacheRetrieve(0, -1)), int(self.CacheRetrieve(1, -1))), -2)\"]",
 
             # CORE CONCEPTS
             "value":"[python \"self.CacheStore(eval(self.CacheRetrieve(0, -1)), -2)\"]",
@@ -313,18 +321,35 @@ class Intelligence:
                 "[set_quoted (TEMP_CONNECTION_TYPE) [argument]]"+
                 "[set_quoted (TEMP_CONNECTION_END) [argument [count [count]]]]"+
                 "[set_quoted (TEMP_CONNCECTION_INDEX) [length [get [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]]]]]]]"+
-                "[set [get [build_connection_gettable \"type\"]] [quotable [concept [value (TEMP_CONNECTION_TYPE)]]]]"+
-                "[set [get [build_connection_gettable \"end\"]] [quotable [concept [value (TEMP_CONNECTION_END)]]]]",
+                "[set [get [build_connection_gettable_direct \"reftype\"]] \"direct\"]"+
+                "[set [get [build_connection_gettable_direct \"type\"]] [quotable [concept [value (TEMP_CONNECTION_TYPE)]]]]"+
+                "[set [get [build_connection_gettable_direct \"end\"]] [quotable [concept [value (TEMP_CONNECTION_END)]]]]"+
+                "[set_quoted (TEMP_CONNCECTION_INDEX) [length [get [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_CONNECTION_TYPE)]]]]]]]"+
+                "[set [get [build_connection_gettable_descriptor \"reftype\"]] \"descriptor\"]"+
+                "[set [get [build_connection_gettable_descriptor \"start\"]] [quotable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]]]]"+
+                "[set [get [build_connection_gettable_descriptor \"end\"]] [quotable [concept [value (TEMP_CONNECTION_END)]]]]"+
+                "[set_quoted (TEMP_CONNCECTION_INDEX) [length [get [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_CONNECTION_END)]]]]]]]"+
+                "[set [get [build_connection_gettable_indirect \"reftype\"]] \"indirect\"]"+
+                "[set [get [build_connection_gettable_indirect \"type\"]] [quotable [concept [value (TEMP_CONNECTION_TYPE)]]]]"+
+                "[set [get [build_connection_gettable_indirect \"start\"]] [quotable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]]]]",
 
-            "build_connection_gettable":""+
+            "build_connection_gettable_direct":""+
                 "[set (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE) [argument]]"+
                 "[return [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]] [referable [value (TEMP_CONNCECTION_INDEX)] [referable [value (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE)]]]]]]",
+
+            "build_connection_gettable_descriptor":""+
+                "[set (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE) [argument]]"+
+                "[return [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_CONNECTION_TYPE)]] [referable [value (TEMP_CONNCECTION_INDEX)] [referable [value (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE)]]]]]]",
+
+            "build_connection_gettable_indirect":""+
+                "[set (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE) [argument]]"+
+                "[return [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_CONNECTION_END)]] [referable [value (TEMP_CONNCECTION_INDEX)] [referable [value (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE)]]]]]]",
 
                 #"[set_quoted (TEMP_BUILD_CONNECTION_GETTABLE_TOINDEX) [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]]]]]"+
                 #"[set_quoted (TEMP_BUILD_CONNECTION_GETTABLE_INDEX) [count [length [get [value (TEMP_BUILD_CONNECTION_GETTABLE_TOINDEX)]]]]]"+
 
                 #"[return [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]] [referable [value (TEMP_BUILD_CONNECTION_GETTABLE_INDEX)]] [referable [value (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE)]]]]]",
-                
+               
 
 
 
