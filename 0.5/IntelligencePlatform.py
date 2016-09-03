@@ -42,7 +42,7 @@ logCacheDetailOn = False
 logConceptParseOn = False
 logIntelligenceOn = False
 logSyntaxOn = False
-logExecutionOn = True
+logExecutionOn = False
 logTimingOn = False
 logErrorOn = True
 logPlatformOn = True
@@ -643,9 +643,14 @@ class IntelligencePlatform:
         graphStorage = eval(self.entity.Memory["TEMP_FIND_CONNECTIONS_GRAPHLOC"])
         originatingConcept = self.entity.Memory["TEMP_FIND_CONNECTIONS_CONCEPT"]
         desiredType = self.entity.Memory["TEMP_FIND_CONNECTIONS_TYPE"]
-        resultsStorage = eval(self.entity.Memory["TEMP_FIND_CONNECTIONS_RESULTLOC"])
+        try: resultsStorage = eval(self.entity.Memory["TEMP_FIND_CONNECTIONS_RESULTLOC"])
+        except: 
+            exec(self.entity.Memory["TEMP_FIND_CONNECTIONS_RESULTLOC"] + " = {}")
+            resultsStorage = eval(self.entity.Memory["TEMP_FIND_CONNECTIONS_RESULTLOC"])
 
         resultsIndex = 0
+        try: resultsIndex = len(resultsStorage.keys())
+        except: pass
 
         for index in graphStorage[originatingConcept]:
             entry = graphStorage[originatingConcept][index]
@@ -654,6 +659,25 @@ class IntelligencePlatform:
                 resultsStorage[str(resultsIndex)] = str(entry["end"])
                 resultsIndex += 1
 
+    def METAFindConnectionsByEnd(self):
+        graphStorage = eval(self.entity.Memory["TEMP_FIND_CONNECTIONS_GRAPHLOC"])
+        endingConcept = self.entity.Memory["TEMP_FIND_CONNECTIONS_CONCEPT"]
+        desiredType = self.entity.Memory["TEMP_FIND_CONNECTIONS_TYPE"]
+        try: resultsStorage = eval(self.entity.Memory["TEMP_FIND_CONNECTIONS_RESULTLOC"])
+        except: 
+            exec(self.entity.Memory["TEMP_FIND_CONNECTIONS_RESULTLOC"] + " = {}")
+            resultsStorage = eval(self.entity.Memory["TEMP_FIND_CONNECTIONS_RESULTLOC"])
+
+        resultsIndex = 0
+        try: resultsIndex = len(resultsStorage.keys())
+        except: pass
+
+        for index in graphStorage[endingConcept]:
+            entry = graphStorage[endingConcept][index]
+            
+            if entry["reftype"] == "indirect" and entry["type"] == desiredType:
+                resultsStorage[str(resultsIndex)] = str(entry["start"])
+                resultsIndex += 1
 
 
 

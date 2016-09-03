@@ -97,7 +97,7 @@ class Intelligence:
 
             # TODO: switch order of graph concept arguments
             #"self":"[graph (MAGRAPH) (mutate)][print [findconnections (MAGRAPH) (mutate) (needs)]]",
-            "self":"[graph (MAGRAPH) (mutate)][findconnections_by_type (MAGRAPH) (mutate) (needs) (RESULTS)][print [value [get [build_array_gettable (RESULTS) [count]]]]]",
+            "self":"[graph (MAGRAPH) (mutate)][findconnections_by_type (MAGRAPH) (mutate) (needs) (RESULTS)][findconnections_by_end (MAGRAPH) (is) (thing) (RESULTS2)][print [value [get [build_array_gettable (RESULTS) [count]]]]][print [value [get [build_array_gettable (RESULTS2) [count]]]]]",
             
             # TODO: sincerely think about making current set "copy" and set_quoted the actual set? 
             # NOTE: ^ if you think about it, it makes more sense to just have a
@@ -357,9 +357,21 @@ class Intelligence:
                 "[set_quoted (TEMP_FIND_CONNECTIONS_CONCEPT) [concept [value (TEMP_ARG_1)]]]"+
                 "[set_quoted (TEMP_FIND_CONNECTIONS_TYPE) [concept [value (TEMP_ARG_2)]]]"+
                 "[set_quoted (TEMP_FIND_CONNECTIONS_RESULTLOC) [value (TEMP_ARG_3)]]"+
-                "[set [value (TEMP_FIND_CONNECTIONS_RESULTLOC)] [dequotable \"{}\"]]"+ # ensures place exists
+                #"[set [value (TEMP_FIND_CONNECTIONS_RESULTLOC)] [dequotable \"{}\"]]"+ # ensures place exists
                 "[python \"self.METAFindConnectionsByType()\"]",
 
+
+            "findconnections_by_end":""+
+                "[set_quoted (TEMP_ARG_0) [argument]]"+ # loc
+                "[set_quoted (TEMP_ARG_1) [argument [count [count]]]]"+ # concept
+                "[set_quoted (TEMP_ARG_2) [argument [count [count [count]]]]]"+ # type
+                "[set_quoted (TEMP_ARG_3) [argument [count [count [count [count]]]]]]"+ # where to store results
+                "[set_quoted (TEMP_FIND_CONNECTIONS_GRAPHLOC) [value (TEMP_ARG_0)]]"+
+                "[set_quoted (TEMP_FIND_CONNECTIONS_TYPE) [concept [value (TEMP_ARG_1)]]]"+
+                "[set_quoted (TEMP_FIND_CONNECTIONS_CONCEPT) [concept [value (TEMP_ARG_2)]]]"+
+                "[set_quoted (TEMP_FIND_CONNECTIONS_RESULTLOC) [value (TEMP_ARG_3)]]"+
+                #"[set [value (TEMP_FIND_CONNECTIONS_RESULTLOC)] [dequotable \"{}\"]]"+ # ensures place exists
+                "[python \"self.METAFindConnectionsByEnd()\"]",
 
 
 
