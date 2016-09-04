@@ -97,7 +97,15 @@ class Intelligence:
 
             # TODO: switch order of graph concept arguments
             #"self":"[graph (MAGRAPH) (mutate)][print [findconnections (MAGRAPH) (mutate) (needs)]]",
-            "self":"[graph (MAGRAPH) (mutate)][findconnections_by_type (MAGRAPH) (mutate) (needs) (RESULTS)][findconnections_by_end (MAGRAPH) (is) (thing) (RESULTS2)][print [value [get [build_array_gettable (RESULTS) [count]]]]][print [value [get [build_array_gettable (RESULTS2) [count]]]]]",
+            #"self":"[graph (MAGRAPH) (mutate)][findconnections_by_type (MAGRAPH) (mutate) (needs) (RESULTS)][findconnections_by_end (MAGRAPH) (is) (thing) (RESULTS2)][print [value [get [build_array_gettable (RESULTS) [count]]]]][print [value [get [build_array_gettable (RESULTS2) [count]]]]]",
+
+            #"self":"[graph (MAGRAPH) (mutate)][construct_random [concept (mutate)] (MAGRAPH)][print [value (TEMP_CONSTRUCT_RESULTS_NEEDS)]]",
+
+            "self":"[loop [dequotable \"0\"] [dequotable \"5\"] [runnable [concept (return)] [runnable [concept (+)] [concat [runnable [concept (value)] [referable [concept (TEMP_LOOP_INDEX_TEMP)]]] [concat [dequotable \" \"] [runnable [concept (count)] [runnable [concept (count)]]]]]]] [runnable [concept (print)] [runnable [concept (peek)] [referable [concept (TEMP_LOOP_INDEX)]]]]]",
+
+
+            #"self":"[stack (THINGY) \"Yes!\"][print [peek (THINGY)]][stack (THINGY) \"No.\"][print [peek (THINGY)]][unstack (THINGY)][print [peek (THINGY)]][unstack (THINGY)]",
+
             
             # TODO: sincerely think about making current set "copy" and set_quoted the actual set? 
             # NOTE: ^ if you think about it, it makes more sense to just have a
@@ -165,6 +173,8 @@ class Intelligence:
             #"length":"[python \"self.CacheStore(len(eval(str(self.CacheRetrieve(0, -1))).keys()), -2)\"]",
             "length":"[python \"try: self.CacheStore(len(eval(str(self.CacheRetrieve(0, -1))).keys()), -2)\nexcept: self.CacheStore(0, -2)\"]",
             
+            "delete":"[python \"exec('del ' + str(self.CacheRetrieve(0, -1)))\"]",
+
 
             # META CORE
             "concept":"[python \"self.CacheStore(self.GetReferenceName(self.CacheRetrieve(0, -1)), -2)\"]", # gets the the name of the concept of a reference
@@ -282,7 +292,27 @@ class Intelligence:
                 "[recursive_array_shift]",
 
 
+            
 
+
+
+            "stackable":""+
+                "[set_quoted (TEMP_STACKABLE) [argument]]"+
+                "[return [get [referable [concat [dequotable \"STACK_\"] [concept [value (TEMP_STACKABLE)]]]]]",
+                
+            "stack":""+
+                "[set_quoted (TEMP_STACK_CONCEPT) [argument]]"+
+                "[set_quoted (TEMP_STACK_VALUE) [argument [count [count]]]]"+
+                "[set_quoted [get [build_array_gettable [stackable [value (TEMP_STACK_CONCEPT)]] [length [stackable [value (TEMP_STACK_CONCEPT)]]]]] [value (TEMP_STACK_VALUE)]]",
+
+            "peek":""+
+                "[set_quoted (TEMP_PEEK_CONCEPT) [argument]]"+
+                "[return [value [get [build_array_gettable [stackable [value (TEMP_PEEK_CONCEPT)]] [- [length [stackable [value (TEMP_PEEK_CONCEPT)]]] [dequotable \"1\"]]]]]]",
+
+            "unstack":""+
+                "[set_quoted (TEMP_UNSTACK_CONCEPT) [argument]]"+
+                #"[set [get [build_array_gettable [stackable [value (TEMP_UNSTACK_CONCEPT)]] [- [length [stackable [value (TEMP_PEEK_CONCEPT)]]] [dequotable \"1\"]]]] [dequotable \"None\"]]",
+                "[delete [get [build_array_gettable [stackable [value (TEMP_UNSTACK_CONCEPT)]] [- [length [stackable [value (TEMP_UNSTACK_CONCEPT)]]] [dequotable \"1\"]]]]]",
 
 
             # NOTE: there's going to have to be a way to "name" a loop and have
@@ -291,21 +321,29 @@ class Intelligence:
             # arguments to pass in:
             # 0 - number to start at
             # 1 - number to end at
-            # 2 - operation for number (should be REFERENCE to concept of operation?)
-            # 3 - function to run
-            #"loop":""+
-                #"[set (TEMP_LOOP_INDEX) [argument]]"+
-                #"[set (TEMP_LOOP_END) [argument [count [count]]]]"+
-                #"[set_quoted (TEMP_LOOP_OPERATION) [argument [count [count [count]]]]]"+
-                #"[set_quoted (TEMP_LOOP_RUN) [argument [count [count [count [count]]]]]]"+
-                #"[loop_recurse]",
+            # 2 - operation for number (THIS IS CODE) [NOTE: this should return something!!!!]
+            # 3 - function to run (THIS IS CODE)
+            "loop":""+
+                "[stack (TEMP_LOOP_INDEX) [argument]]"+
+                "[stack (TEMP_LOOP_END) [argument [count [count]]]]"+
+                "[stack (TEMP_LOOP_OPERATION) [argument [count [count [count]]]]]"+
+                "[stack (TEMP_LOOP_RUN) [argument [count [count [count [count]]]]]]"+
+                "[loop_recurse]"+
+                "[unstack (TEMP_LOOP_INDEX)]"+
+                "[unstack (TEMP_LOOP_END)]"+
+                "[unstack (TEMP_LOOP_OPERATION)]"+
+                "[unstack (TEMP_LOOP_RUN)]",
 
-            #"loop_recurse":"[if [!= [value (TEMP_LOOP_INDEX)] [value (TEMP_LOOP_END)]] [runnable [concept (loop_recurse_run)]]]",
+            "loop_recurse":"[if [!= [peek (TEMP_LOOP_INDEX)] [peek (TEMP_LOOP_END)]] [runnable [concept (loop_recurse_run)]]]",
             
-            #"loop_recurse_run":""+
-                #"[run [value (TEMP_LOOP_RUN)]]"+
-                #"[set (TEMP_LOOP_INDEX) [run [runnable [value (TEMP_LOOP_OPERATION)] [concat [value (TEMP_LOOP_INDEX)] \"1\"]]]]"+
-                #"[loop_recurse]",
+            "loop_recurse_run":""+
+                "[run [peek (TEMP_LOOP_RUN)]]"+
+                "[set (TEMP_LOOP_INDEX_TEMP) [peek (TEMP_LOOP_INDEX)]]"+
+                "[unstack (TEMP_LOOP_INDEX)]"+
+                "[set (TEMP_LOOP_INDEX_TEMP) [run [peek (TEMP_LOOP_OPERATION)]]]"+
+                "[stack (TEMP_LOOP_INDEX) [value (TEMP_LOOP_INDEX_TEMP)]]"+
+                #"[set (TEMP_LOOP_INDEX_INC) [run [runnable [peek (TEMP_LOOP_OPERATION)] [concat [peek (TEMP_LOOP_INDEX)] \"1\"]]]]"+
+                "[loop_recurse]",
 
             # future concepts:
             # break concept (stops current concept)
@@ -363,8 +401,8 @@ class Intelligence:
 
             "findconnections_by_end":""+
                 "[set_quoted (TEMP_ARG_0) [argument]]"+ # loc
-                "[set_quoted (TEMP_ARG_1) [argument [count [count]]]]"+ # concept
-                "[set_quoted (TEMP_ARG_2) [argument [count [count [count]]]]]"+ # type
+                "[set_quoted (TEMP_ARG_1) [argument [count [count]]]]"+ # type
+                "[set_quoted (TEMP_ARG_2) [argument [count [count [count]]]]]"+ # end concept
                 "[set_quoted (TEMP_ARG_3) [argument [count [count [count [count]]]]]]"+ # where to store results
                 "[set_quoted (TEMP_FIND_CONNECTIONS_GRAPHLOC) [value (TEMP_ARG_0)]]"+
                 "[set_quoted (TEMP_FIND_CONNECTIONS_TYPE) [concept [value (TEMP_ARG_1)]]]"+
@@ -372,6 +410,20 @@ class Intelligence:
                 "[set_quoted (TEMP_FIND_CONNECTIONS_RESULTLOC) [value (TEMP_ARG_3)]]"+
                 #"[set [value (TEMP_FIND_CONNECTIONS_RESULTLOC)] [dequotable \"{}\"]]"+ # ensures place exists
                 "[python \"self.METAFindConnectionsByEnd()\"]",
+
+
+            "construct_random":""+
+                "[set_quoted (TEMP_CONSTRUCT_CONCEPT_NAME) [argument]]"+
+                "[set_quoted (TEMP_CONSTRUCT_GRAPH) [argument [count [count]]]]"+
+                "[findconnections_by_type [value (TEMP_CONSTRUCT_GRAPH)] [get [referable [value (TEMP_CONSTRUCT_CONCEPT_NAME)]]] (needs) (TEMP_CONSTRUCT_RESULTS_NEEDS)]",
+
+
+
+
+
+
+            #"loop":""+
+                #"[set (TEMP_LOOP_INDEX
 
 
 
