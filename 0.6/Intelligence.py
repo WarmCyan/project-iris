@@ -101,7 +101,11 @@ class Intelligence:
 
             #"self":"[graph (MAGRAPH) (mutate)][construct_random [concept (mutate)] (MAGRAPH)][print [value (TEMP_CONSTRUCT_RESULTS_NEEDS)]]",
 
+            # NOTE: big loop test
             "self":"[loop [dequotable \"0\"] [dequotable \"50\"] [runnable [concept (return)] [runnable [concept (+)] [concat [runnable [concept (value)] [referable [concept (TEMP_LOOP_INDEX_TEMP)]]] [concat [dequotable \" \"] [runnable [concept (count)] [runnable [concept (count)]]]]]]] [runnable [concept (print)] [runnable [concept (peek)] [referable [concept (TEMP_LOOP_INDEX)]]]]]",
+            
+            #"self":"[print [stackable (THING)]]",
+            #"self":"[stack (THING) \"yes\"][print [peek (THING)]][stack (THING) \"no\"]",
 
 
             #"self":"[stack (THINGY) \"Yes!\"][print [peek (THINGY)]][stack (THINGY) \"No.\"][print [peek (THINGY)]][unstack (THINGY)][print [peek (THINGY)]][unstack (THINGY)]",
@@ -298,21 +302,25 @@ class Intelligence:
 
             "stackable":""+
                 "[set_quoted (TEMP_STACKABLE) [argument]]"+
-                "[return [get [referable [concat [dequotable \"STACK_\"] [concept [value (TEMP_STACKABLE)]]]]]",
+                "[python \"self.METAStackable()\"]",
+                #"[return [get [referable [concat [dequotable \"STACK_\"] [concept [value (TEMP_STACKABLE)]]]]]",
                 
             "stack":""+
                 "[set_quoted (TEMP_STACK_CONCEPT) [argument]]"+
                 "[set_quoted (TEMP_STACK_VALUE) [argument [count [count]]]]"+
-                "[set_quoted [get [build_array_gettable [stackable [value (TEMP_STACK_CONCEPT)]] [length [stackable [value (TEMP_STACK_CONCEPT)]]]]] [value (TEMP_STACK_VALUE)]]",
+                #"[set_quoted [get [build_array_gettable [stackable [value (TEMP_STACK_CONCEPT)]] [length [stackable [value (TEMP_STACK_CONCEPT)]]]]] [value (TEMP_STACK_VALUE)]]",
+                "[python \"self.METAStack()\"]",
 
             "peek":""+
                 "[set_quoted (TEMP_PEEK_CONCEPT) [argument]]"+
-                "[return [value [get [build_array_gettable [stackable [value (TEMP_PEEK_CONCEPT)]] [- [length [stackable [value (TEMP_PEEK_CONCEPT)]]] [dequotable \"1\"]]]]]]",
+                #"[return [value [get [build_array_gettable [stackable [value (TEMP_PEEK_CONCEPT)]] [- [length [stackable [value (TEMP_PEEK_CONCEPT)]]] [dequotable \"1\"]]]]]]",
+                "[python \"self.METAPeek()\"]",
 
             "unstack":""+
                 "[set_quoted (TEMP_UNSTACK_CONCEPT) [argument]]"+
                 #"[set [get [build_array_gettable [stackable [value (TEMP_UNSTACK_CONCEPT)]] [- [length [stackable [value (TEMP_PEEK_CONCEPT)]]] [dequotable \"1\"]]]] [dequotable \"None\"]]",
-                "[delete [get [build_array_gettable [stackable [value (TEMP_UNSTACK_CONCEPT)]] [- [length [stackable [value (TEMP_UNSTACK_CONCEPT)]]] [dequotable \"1\"]]]]]",
+                #"[delete [get [build_array_gettable [stackable [value (TEMP_UNSTACK_CONCEPT)]] [- [length [stackable [value (TEMP_UNSTACK_CONCEPT)]]] [dequotable \"1\"]]]]]",
+                "[python \"self.METAUnstack()\"]",
 
 
             # NOTE: there's going to have to be a way to "name" a loop and have
@@ -328,7 +336,8 @@ class Intelligence:
                 "[stack (TEMP_LOOP_END) [argument [count [count]]]]"+
                 "[stack (TEMP_LOOP_OPERATION) [argument [count [count [count]]]]]"+
                 "[stack (TEMP_LOOP_RUN) [argument [count [count [count [count]]]]]]"+
-                "[loop_recurse]"+
+                #"[loop_recurse]"+
+                "[python \"self.METALoop()\"]"+
                 "[unstack (TEMP_LOOP_INDEX)]"+
                 "[unstack (TEMP_LOOP_END)]"+
                 "[unstack (TEMP_LOOP_OPERATION)]"+
