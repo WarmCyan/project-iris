@@ -103,8 +103,9 @@ class Intelligence:
 
             # NOTE: big loop test
             #"self":"[loop [dequotable \"0\"] [dequotable \"50\"] [runnable [concept (return)] [runnable [concept (+)] [concat [runnable [concept (value)] [referable [concept (TEMP_LOOP_INDEX_TEMP)]]] [concat [dequotable \" \"] [runnable [concept (count)] [runnable [concept (count)]]]]]]] [runnable [concept (print)] [runnable [concept (peek)] [referable [concept (TEMP_LOOP_INDEX)]]]]]",
+            "self":"[loop [dequotable \"0\"] [dequotable \"50\"] [runnable [concept (return)] [runnable [concept (+)] [concat [runnable [concept (value)] [referable [concept (TEMP_LOOP_INDEX)]]] [concat [dequotable \" \"] [runnable [concept (count)] [runnable [concept (count)]]]]]]] [runnable [concept (print)] [runnable [concept (value)] [referable [concept (TEMP_LOOP_INDEX)]]]]]",
             
-            "self":"[print [stackable (THING)]]",
+            #"self":"[print [stackable (THING)]]",
             #"self":"[stack (THING) \"yes\"][print [peek (THING)]][stack (THING) \"no\"]",
 
 
@@ -305,22 +306,26 @@ class Intelligence:
                 "[python \"self.METAStackable()\"]",
                 #"[return [get [referable [concat [dequotable \"STACK_\"] [concept [value (TEMP_STACKABLE)]]]]]",
                 
-            "stack":""+
-                "[set_quoted (TEMP_STACK_CONCEPT) [argument]]"+
-                "[set_quoted (TEMP_STACK_VALUE) [argument [count [count]]]]"+
-                #"[set_quoted [get [build_array_gettable [stackable [value (TEMP_STACK_CONCEPT)]] [length [stackable [value (TEMP_STACK_CONCEPT)]]]]] [value (TEMP_STACK_VALUE)]]",
-                "[python \"self.METAStack()\"]",
+            "stack":"[python \"Core.Stack()\"]",
+            "peek":"[python \"Core.Peek()\"]",
+            "unstack":"[python \"Core.Unstack()\"]",
 
-            "peek":""+
-                "[set_quoted (TEMP_PEEK_CONCEPT) [argument]]"+
-                #"[return [value [get [build_array_gettable [stackable [value (TEMP_PEEK_CONCEPT)]] [- [length [stackable [value (TEMP_PEEK_CONCEPT)]]] [dequotable \"1\"]]]]]]",
-                "[python \"self.METAPeek()\"]",
+            #"stack":""+
+                #"[set_quoted (TEMP_STACK_CONCEPT) [argument]]"+
+                #"[set_quoted (TEMP_STACK_VALUE) [argument [count [count]]]]"+
+                ##"[set_quoted [get [build_array_gettable [stackable [value (TEMP_STACK_CONCEPT)]] [length [stackable [value (TEMP_STACK_CONCEPT)]]]]] [value (TEMP_STACK_VALUE)]]",
+                #"[python \"self.METAStack()\"]",
 
-            "unstack":""+
-                "[set_quoted (TEMP_UNSTACK_CONCEPT) [argument]]"+
-                #"[set [get [build_array_gettable [stackable [value (TEMP_UNSTACK_CONCEPT)]] [- [length [stackable [value (TEMP_PEEK_CONCEPT)]]] [dequotable \"1\"]]]] [dequotable \"None\"]]",
-                #"[delete [get [build_array_gettable [stackable [value (TEMP_UNSTACK_CONCEPT)]] [- [length [stackable [value (TEMP_UNSTACK_CONCEPT)]]] [dequotable \"1\"]]]]]",
-                "[python \"self.METAUnstack()\"]",
+            #"peek":""+
+            #    "[set_quoted (TEMP_PEEK_CONCEPT) [argument]]"+
+            #    #"[return [value [get [build_array_gettable [stackable [value (TEMP_PEEK_CONCEPT)]] [- [length [stackable [value (TEMP_PEEK_CONCEPT)]]] [dequotable \"1\"]]]]]]",
+            #    "[python \"self.METAPeek()\"]",
+
+            #"unstack":""+
+                #"[set_quoted (TEMP_UNSTACK_CONCEPT) [argument]]"+
+                ##"[set [get [build_array_gettable [stackable [value (TEMP_UNSTACK_CONCEPT)]] [- [length [stackable [value (TEMP_PEEK_CONCEPT)]]] [dequotable \"1\"]]]] [dequotable \"None\"]]",
+                ##"[delete [get [build_array_gettable [stackable [value (TEMP_UNSTACK_CONCEPT)]] [- [length [stackable [value (TEMP_UNSTACK_CONCEPT)]]] [dequotable \"1\"]]]]]",
+                #"[python \"self.METAUnstack()\"]",
 
 
             # NOTE: there's going to have to be a way to "name" a loop and have
@@ -331,28 +336,32 @@ class Intelligence:
             # 1 - number to end at
             # 2 - operation for number (THIS IS CODE) [NOTE: this should return something!!!!]
             # 3 - function to run (THIS IS CODE)
-            "loop":""+
-                "[stack (TEMP_LOOP_INDEX) [argument]]"+
-                "[stack (TEMP_LOOP_END) [argument [count [count]]]]"+
-                "[stack (TEMP_LOOP_OPERATION) [argument [count [count [count]]]]]"+
-                "[stack (TEMP_LOOP_RUN) [argument [count [count [count [count]]]]]]"+
-                #"[loop_recurse]"+
-                "[python \"self.METALoop()\"]"+
-                "[unstack (TEMP_LOOP_INDEX)]"+
-                "[unstack (TEMP_LOOP_END)]"+
-                "[unstack (TEMP_LOOP_OPERATION)]"+
-                "[unstack (TEMP_LOOP_RUN)]",
+    
+            "loop":"[python \"Core.Loop()\"]",
 
-            "loop_recurse":"[if [!= [peek (TEMP_LOOP_INDEX)] [peek (TEMP_LOOP_END)]] [runnable [concept (loop_recurse_run)]]]",
             
-            "loop_recurse_run":""+
-                "[run [peek (TEMP_LOOP_RUN)]]"+
-                "[set (TEMP_LOOP_INDEX_TEMP) [peek (TEMP_LOOP_INDEX)]]"+
-                "[unstack (TEMP_LOOP_INDEX)]"+
-                "[set (TEMP_LOOP_INDEX_TEMP) [run [peek (TEMP_LOOP_OPERATION)]]]"+
-                "[stack (TEMP_LOOP_INDEX) [value (TEMP_LOOP_INDEX_TEMP)]]"+
-                #"[set (TEMP_LOOP_INDEX_INC) [run [runnable [peek (TEMP_LOOP_OPERATION)] [concat [peek (TEMP_LOOP_INDEX)] \"1\"]]]]"+
-                "[loop_recurse]",
+            #"loop":""+
+            #    "[stack (TEMP_LOOP_INDEX) [argument]]"+
+            #    "[stack (TEMP_LOOP_END) [argument [count [count]]]]"+
+            #    "[stack (TEMP_LOOP_OPERATION) [argument [count [count [count]]]]]"+
+            #    "[stack (TEMP_LOOP_RUN) [argument [count [count [count [count]]]]]]"+
+            #    #"[loop_recurse]"+
+            #    "[python \"self.METALoop()\"]"+
+            #    "[unstack (TEMP_LOOP_INDEX)]"+
+            #    "[unstack (TEMP_LOOP_END)]"+
+            #    "[unstack (TEMP_LOOP_OPERATION)]"+
+            #    "[unstack (TEMP_LOOP_RUN)]",
+
+            #"loop_recurse":"[if [!= [peek (TEMP_LOOP_INDEX)] [peek (TEMP_LOOP_END)]] [runnable [concept (loop_recurse_run)]]]",
+            
+            #"loop_recurse_run":""+
+            #    "[run [peek (TEMP_LOOP_RUN)]]"+
+            #    "[set (TEMP_LOOP_INDEX_TEMP) [peek (TEMP_LOOP_INDEX)]]"+
+            #    "[unstack (TEMP_LOOP_INDEX)]"+
+            #    "[set (TEMP_LOOP_INDEX_TEMP) [run [peek (TEMP_LOOP_OPERATION)]]]"+
+            #    "[stack (TEMP_LOOP_INDEX) [value (TEMP_LOOP_INDEX_TEMP)]]"+
+            #    #"[set (TEMP_LOOP_INDEX_INC) [run [runnable [peek (TEMP_LOOP_OPERATION)] [concat [peek (TEMP_LOOP_INDEX)] \"1\"]]]]"+
+            #    "[loop_recurse]",
 
             # future concepts:
             # break concept (stops current concept)

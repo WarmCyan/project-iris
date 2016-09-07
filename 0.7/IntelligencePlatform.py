@@ -86,10 +86,10 @@ class IntelligencePlatform:
     def LoadModule(self, ModuleName):
         self.Log("Loading " + ModuleName + " module...", LOG_PLATFORM)
         startLoadTime = time.clock()
-        exec("import IRISModules." + ModuleName + " as " + ModuleName)
+        exec("import IRISModules." + ModuleName + " as " + ModuleName, globals())
         exec(ModuleName + ".platform = self")
         loadTime = time.clock() - startLoadTime
-        self.Log(ModuleName + " module successfully loaded in " + str(loadTime) + " ms")
+        self.Log(ModuleName + " module successfully loaded in " + str(loadTime) + " ms\n")
 
     # NOTE: press tab and then enter to get a platform level command prompt
     def ConsoleInput(self, cmdQueue):
@@ -692,6 +692,11 @@ class IntelligencePlatform:
             if entry["reftype"] == "indirect" and entry["type"] == desiredType:
                 resultsStorage[str(resultsIndex)] = str(entry["start"])
                 resultsIndex += 1
+
+
+    def Evaluator(self, evaluate): return eval(evaluate)
+
+    def Executor(self, execute): exec(execute)
 
     # NOTE: don't need!!!
     #def METAStackable(self):
