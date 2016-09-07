@@ -103,13 +103,14 @@ class Intelligence:
 
             # NOTE: big loop test
             #"self":"[loop [dequotable \"0\"] [dequotable \"50\"] [runnable [concept (return)] [runnable [concept (+)] [concat [runnable [concept (value)] [referable [concept (TEMP_LOOP_INDEX_TEMP)]]] [concat [dequotable \" \"] [runnable [concept (count)] [runnable [concept (count)]]]]]]] [runnable [concept (print)] [runnable [concept (peek)] [referable [concept (TEMP_LOOP_INDEX)]]]]]",
-            "self":"[loop [dequotable \"0\"] [dequotable \"50\"] [runnable [concept (return)] [runnable [concept (+)] [concat [runnable [concept (value)] [referable [concept (TEMP_LOOP_INDEX)]]] [concat [dequotable \" \"] [runnable [concept (count)] [runnable [concept (count)]]]]]]] [runnable [concept (print)] [runnable [concept (value)] [referable [concept (TEMP_LOOP_INDEX)]]]]]",
+            #"self":"[loop [dequotable \"0\"] [dequotable \"50\"] [runnable [concept (return)] [runnable [concept (+)] [concat [runnable [concept (value)] [referable [concept (TEMP_LOOP_INDEX)]]] [concat [dequotable \" \"] [runnable [concept (count)] [runnable [concept (count)]]]]]]] [runnable [concept (print)] [runnable [concept (value)] [referable [concept (TEMP_LOOP_INDEX)]]]]]",
             
             #"self":"[print [stackable (THING)]]",
             #"self":"[stack (THING) \"yes\"][print [peek (THING)]][stack (THING) \"no\"]",
 
-
             #"self":"[stack (THINGY) \"Yes!\"][print [peek (THINGY)]][stack (THINGY) \"No.\"][print [peek (THINGY)]][unstack (THINGY)][print [peek (THINGY)]][unstack (THINGY)]",
+
+            "self":"[map (mutate) (MAGRAPH)][print [value (MAGRAPH)]]",
 
             
             # TODO: sincerely think about making current set "copy" and set_quoted the actual set? 
@@ -212,12 +213,14 @@ class Intelligence:
             #"map_concept":"[set (TEMP_ARG_0) [argument]][set (TEMP_MAP_CONCEPT) [value [value (TEMP_ARG_0)]]]",
             #"map_concept":"[set (TEMP_ARG_0) [argument]][set (TEMP_MAP_CONCEPT) [quotable [value (TEMP_ARG_0)]]]",
             #"map_concept":"[set_quoted (TEMP_ARG_0) [argument]][set (TEMP_MAP_CONCEPT) [quotable [value (TEMP_ARG_0)]]]",
-            "map_concept":"" +
-                "[set_quoted (TEMP_ARG_0) [argument]]" +
-                "[set (TEMP_MAP_CONCEPT) [value (TEMP_ARG_0)]]" +
-                "[set_quoted (TEMP_ARG_1) [argument [count [count]]]]" +
-                "[set_quoted (TEMP_MAP_LOC) [concept [value (TEMP_ARG_1)]]]" +
-                "[python \"self.METAMapConcept()\"]",
+            #"map_concept":"" +
+                #"[set_quoted (TEMP_ARG_0) [argument]]" +
+                #"[set (TEMP_MAP_CONCEPT) [value (TEMP_ARG_0)]]" +
+                #"[set_quoted (TEMP_ARG_1) [argument [count [count]]]]" +
+                #"[set_quoted (TEMP_MAP_LOC) [concept [value (TEMP_ARG_1)]]]" +
+                #"[python \"self.METAMapConcept()\"]",
+
+            "map":"[python \"Core.Map()\"]",
 
             #"reconstruct":"[
 

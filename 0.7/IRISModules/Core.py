@@ -1,8 +1,5 @@
 platform = None #NOTE: this is the convention, so that every module can use the platform!
 
-def Test():
-    print("Hello world!")
-
 def Stack():
     StackActuator(platform.CacheRetrieve(0, -1), platform.CacheRetrieve(1, -1))
 
@@ -15,12 +12,8 @@ def Unstack():
 def Loop():
     LoopActuator(platform.CacheRetrieve(0, -1), platform.CacheRetrieve(1, -1), platform.CacheRetrieve(2, -1), platform.CacheRetrieve(3, -1))
 
-
-# creates a STACK_ string from the literal concept name 
-# returns the evaluated memory reference
-def BuildStackNameFromConcept(conceptName):
-    concept = str("self.entity.Memory[\"STACK_" + conceptName + "\"]")
-    return EnsureRetrieveMemory(concept)
+def Map():
+    MapActuator(platform.Evaluator(platform.CacheRetrieve(0, -1)), platform.CacheRetrieve(1, -1))
 
 # return the actual memory reference for the string, and if it didn't exist,
 # initialize it to an empty dictionary
@@ -41,6 +34,16 @@ def ResolveNameFromMemoryOrConcept(string):
     else:
         conceptName = string
     return conceptName
+
+# =================================================================================
+# STACKING
+# =================================================================================
+
+# creates a STACK_ string from the literal concept name 
+# returns the evaluated memory reference
+def BuildStackNameFromConcept(conceptName):
+    concept = str("self.entity.Memory[\"STACK_" + conceptName + "\"]")
+    return EnsureRetrieveMemory(concept)
 
 # a verbatim concept name string should ONLY be passed in by other literal
 # python code, not IRIS code
@@ -63,6 +66,10 @@ def UnstackActuator(stackConcept):
     length = len(conceptMem.keys())
     del conceptMem[str(length - 1)]
 
+# =================================================================================
+# LOOPING
+# =================================================================================
+
 # index: number to start at
 # end: number to stop the loop at
 # operationCode: literal string of code to run to change index
@@ -71,7 +78,32 @@ def LoopActuator(index, end, operationCode, runCode):
     while (str(index) != str(end)):
         platform.entity.Memory["TEMP_LOOP_INDEX"] = index
         platform.RunConceptExecute(runCode)
-        #platform.entity.Memory["TEMP_LOOP_INDEX"] = index
         platform.RunConceptExecute(operationCode)
-        #index = platform.entity.Memory["TEMP_LOOP_INDEX_TEMP"]
-        index = platform.CacheRetrieve(0, -2)
+        index = platform.CacheRetrieve(1, -2)
+
+# =================================================================================
+# MAPPING
+# =================================================================================
+
+def MapActuator(conceptString, memoryReferenceString):
+    #mapMem = platform.Evaluator(memoryReferenceString)
+    mapMem = EnsureRetrieveMemory(memoryReferenceString)
+    conceptList = platform.ParseConcepts(conceptString)
+
+    #mapMem = {}
+    index = -1
+    for concept in conceptList:
+        index += 1
+        indexString = str(index)
+        mapMem[indexString] = {}
+        mapMem[indexString]["concept"] = concept[0]
+
+        # create a straight string of the args TODO: maybe later find a way to make
+        # this a recursive structure like it would be anyway?
+        argsString = ""
+        for argument in concept[1]:
+            argsString += " " + str(argument)
+
+        # trim extra space at beginning
+        argsString = argsString[1:]
+        mapMem[indexString]["args"] = argsString
