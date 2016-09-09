@@ -37,13 +37,13 @@ LOG_DIALOG_COLOR = "white"
 LOG_PAUSE_TIME = .1 # the amount of time to pause if logging is off to simulate when actually logging (slows down the intelligence significantly so it doesn't immediately jump to completion when logging is turned off)
 
 # log switches
-logCacheOn = False
-logCacheDetailOn = False
-logConceptParseOn = False
-logIntelligenceOn = False
-logSyntaxOn = False
-logExecutionOn = False
-logTimingOn = False
+logCacheOn = True
+logCacheDetailOn = True
+logConceptParseOn = True
+logIntelligenceOn = True
+logSyntaxOn = True
+logExecutionOn = True
+logTimingOn = True
 logErrorOn = True
 logPlatformOn = True
 logDialogOn = True
@@ -428,7 +428,7 @@ class IntelligencePlatform:
         if not multiLevel: self.CacheStore(reference)
         else: return reference
 
-    def RunConceptExecute(self, conceptString):
+    def RunConceptExecute(self, conceptString, connectionDepth=0, connectionsOnly=False):
         self.HandleCommand()
         if (self.entityRunning == False): return
 
@@ -454,7 +454,9 @@ class IntelligencePlatform:
             for argument in concept[1]:
                 self.Log(indent + "  ARGUMENT: " + str(argument), LOG_SYNTAX)
 
-                if self.graphMode == "nograph" and concept[0] == "connection":
+                #if self.graphMode == "nograph" and concept[0] == "->":
+                # DON'T run arguments in connection if connections are being ignored
+                if connectionDepth == 0 and concept[0] == "->":
                     continue
 
                 # execute argument 
@@ -501,19 +503,29 @@ class IntelligencePlatform:
             else:
                 runstring = self.entity.Memory[concept[0]]
 
-                if runstring == "[self]" and self.graphMode != "graphonly":
+                #if runstring == "[self]" and self.graphMode != "graphonly":
+                if runstring == "[self]" and not connectionsOnly:
                     self.continueSelf = True
                     return
 
-                #if self.graphMode == "graphonly" and concept[0] != "connection" and self.level == self.graphLevel:
+                ##if self.graphMode == "graphonly" and concept[0] != "connection" and self.level == self.graphLevel:
+                    ##continue
+                #if self.graphMode == "graphonly" and concept[0] == "connection":
+                    #connection_flag = True
+                #if self.graphMode == "nograph" and concept[0] == "connection":
                     #continue
-                if self.graphMode == "graphonly" and concept[0] == "connection":
+                #if self.graphMode == "graphonly" and connection_flag and concept[0] != "connection":
+                    #self.CacheClear() # NOTE: don't actually know if this goes here or not...
+                    #continue
+
+                #if connectionsOnly and concept[0] == "->":
+                if connectionDepth > 0 and concept[0] == "->":
                     connection_flag = True
-                if self.graphMode == "nograph" and concept[0] == "connection":
+                #eif connectionsOnly: continue
+                if connectionsOnly and connection_flag and concept[0] != "->":
+                    self.CacheClear()
                     continue
-                if self.graphMode == "graphonly" and connection_flag and concept[0] != "connection":
-                    self.CacheClear() # NOTE: don't actually know if this goes here or not...
-                    continue
+                    
                 
                 self.Log(indent + "[" + str(self.level) + "](executing concept '" + concept[0] + "')", LOG_EXECUTION)
                 self.level += 1

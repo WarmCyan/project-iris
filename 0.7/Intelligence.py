@@ -129,7 +129,7 @@ class Intelligence:
 
 
 
-            "mutate":"[connection (needs) (referable)][connection (is) (thing)][print [dequotable \"mutating!\"]]", # theoretically, this needs some kind of way to list all the available concepts.
+            "mutate":"[-> (needs) (referable)][-> (is) (thing)][print [dequotable \"mutating!\"]]", # theoretically, this needs some kind of way to list all the available concepts.
             "query":"",
             "remember":"",
             "recall":"",
@@ -204,10 +204,12 @@ class Intelligence:
                 #"[set_quoted (TEMP_BUILDING_GRAPH_CONCEPT) [argument [count [count]]]]"+
                 "[stack (TEMP_BUILDING_GRAPH_CONCEPT) [argument]]"+
                 "[stack (TEMP_BUILDING_GRAPH_LOC) [argument [count [count]]]]"+
-                "[python \"self.graphMode = 'graphonly'\"]"+
+                "[python \"self.RunConceptExecute(eval(Core.PeekActuator('TEMP_BUILDING_GRAPH_CONCEPT')), connectionDepth=1, connectionsOnly=True)\"]",
+                #"[stack (TEMP_BUILDING_GRAPH_EXECUTE) [concept [peek (TEMP_BUILDING_GRAPH_CONCEPT)]]]"
+                #"[python \"self.graphMode = 'graphonly'\"]"+
                 #"[sudo \"self.RunConceptExecute(eval(str(self.entity.Memory['TEMP_BUILDING_GRAPH_CONCEPT'])))\"]"+
-                "[run [concept [peek (TEMP_BUILDING_GRAPH_CONCEPT)]]]"
-                "[python \"self.graphMode = 'nograph'\"]",
+                #"[run [concept [peek (TEMP_BUILDING_GRAPH_CONCEPT)]]]"
+                #"[python \"self.graphMode = 'nograph'\"]",
 
 
             
@@ -379,7 +381,7 @@ class Intelligence:
             # NOTE: assumes that TEMP_BUILDING_GRAPH_LOC is a REFERENCE to graph (NOTE: unfortunately this only takes base level concepts....)
             # concept and TEMP_BUILDING_GRAPH_CONCEPT is the LITERAL CONCEPT
             # NAME that we're adding the connection properties to 
-            "connection":"[python \"Core.Connection()\"]",
+            "->":"[python \"Core.Connection()\"]",
             #"connection":""+
                 #"[set_quoted (TEMP_CONNECTION_TYPE) [argument]]"+
                 #"[set_quoted (TEMP_CONNECTION_END) [argument [count [count]]]]"+
