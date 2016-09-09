@@ -15,6 +15,9 @@ def Loop():
 def Map():
     MapActuator(platform.Evaluator(platform.CacheRetrieve(0, -1)), platform.CacheRetrieve(1, -1))
 
+def Connection():
+    ConnectionActuator(platform.CacheRetrieve(0, -1), platform.CacheRetrieve(1, -1))   
+
 # return the actual memory reference for the string, and if it didn't exist,
 # initialize it to an empty dictionary
 def EnsureRetrieveMemory(memoryReferenceString):
@@ -107,3 +110,63 @@ def MapActuator(conceptString, memoryReferenceString):
         # trim extra space at beginning
         argsString = argsString[1:]
         mapMem[indexString]["args"] = argsString
+
+# =================================================================================
+# GRAPHING
+# =================================================================================
+
+def CheckIfConnectionInGraph(reftype, startConcept = "", typeConcept = "", endConcept = "", conceptMem=None):
+    for indexKey in conceptMem:
+        connectionData = conceptMem[indexKey]
+        if reftype != connectionData["reftype"]: continue
+        
+        if reftype == "direct":
+            if typeConcept != connectionData["type"]: continue
+            if endConcept != connectionData["end"]: continue
+        elif reftype == "descriptor":
+            if startConcept != connectionData["start"]: continue
+            if endConcept != connectionData["end"]: continue
+        elif reftype == "indirect":
+            if startConcept != connectionData["start"]: continue
+            if endConcept != connectionData["end"]: continue
+
+        # passed all tests and still here, we must have found a match
+        return True
+
+    return False
+
+# NOTE: requires TEMP_BUILDING_GRAPH_LOC and TEMP_BUILDING_GRAPH_CONCEPT stack to be set (both of which should be reference strings)
+def ConnectionActuator(connectionTypeReferenceString, connectionEndReferenceString):
+    connectionTypeConcept = platform.GetReferenceName(connectionTypeReferenceString)
+    connectionEndConcept = platform.GetReferenceName(connectionEndReferenceString)
+    connectionStartConcept = platform.GetReferenceName(PeekActuator("TEMP_BUILDING_GRAPH_CONCEPT"))
+    baseGraphReferenceString = PeekActuator("TEMP_BUILDING_GRAPH_LOC")
+
+    graphMem = EnsureRetrieveMemory(baseGraphReferenceString)
+    startMem = EnsureRetrieveMemory(baseGraphReferenceString + "['" + connectionStartConcept + "']")
+    typeMem = EnsureRetrieveMemory(baseGraphReferenceString + "['" + connectionTypeConcept + "']")
+    endMem = EnsureRetrieveMemory(baseGraphReferenceString + "['" + connectionEndConcept + "']")
+
+    # direct connection
+    if not CheckIfConnectionInGraph("direct", endConcept=connectionEndConcept, typeConcept=connectionTypeConcept, conceptMem=startMem):
+        newIndex = str(len(startMem.keys()))
+        EnsureRetrieveMemory(baseGraphReferenceString + "['" + connectionStartConcept + "']['" + newIndex +"']")
+        startMem[newIndex]["reftype"] = "direct"
+        startMem[newIndex]["type"] = connectionTypeConcept
+        startMem[newIndex]["end"] = connectionEndConcept
+
+    # descriptor connection
+    if not CheckIfConnectionInGraph("descriptor", endConcept=connectionEndConcept, startConcept=connectionStartConcept, conceptMem=typeMem):
+        newIndex = str(len(typeMem.keys()))
+        EnsureRetrieveMemory(baseGraphReferenceString + "['" + connectionTypeConcept + "']['" + newIndex +"']")
+        typeMem[newIndex]["reftype"] = "descriptor"
+        typeMem[newIndex]["start"] = connectionStartConcept
+        typeMem[newIndex]["end"] = connectionEndConcept
+
+    # indirect connection
+    if not CheckIfConnectionInGraph("indirect", typeConcept=connectionTypeConcept, startConcept=connectionStartConcept, conceptMem=endMem):
+        newIndex = str(len(endMem.keys()))
+        EnsureRetrieveMemory(baseGraphReferenceString + "['" + connectionEndConcept + "']['" + newIndex +"']")
+        endMem[newIndex]["reftype"] = "indirect"
+        endMem[newIndex]["start"] = connectionStartConcept
+        endMem[newIndex]["type"] = connectionTypeConcept

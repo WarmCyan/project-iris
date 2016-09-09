@@ -88,7 +88,7 @@ class Intelligence:
 
 
             #"self":"[graph (MAGRAPH) (mutate)]",
-            #"self":"[graph (MAGRAPH) (mutate)][print [value (MAGRAPH)]]",
+            "self":"[graph (mutate) (MAGRAPH)][print [value (MAGRAPH)]]",
 
             # NOTE: this is the insane test.....
             #"self":"[map_concept (mutate) (MUTATEMAP)][graph (MAGRAPH) (mutate)][print [reconstruct (MUTATEMAP)]]",
@@ -110,7 +110,7 @@ class Intelligence:
 
             #"self":"[stack (THINGY) \"Yes!\"][print [peek (THINGY)]][stack (THINGY) \"No.\"][print [peek (THINGY)]][unstack (THINGY)][print [peek (THINGY)]][unstack (THINGY)]",
 
-            "self":"[map (mutate) (MAGRAPH)][print [value (MAGRAPH)]]",
+            #"self":"[map (mutate) (MAGRAPH)][print [value (MAGRAPH)]]",
 
             
             # TODO: sincerely think about making current set "copy" and set_quoted the actual set? 
@@ -200,11 +200,13 @@ class Intelligence:
 
 
             "graph":""+
-                "[set_quoted (TEMP_BUILDING_GRAPH_LOC) [argument]]"+
-                "[set_quoted (TEMP_BUILDING_GRAPH_CONCEPT) [argument [count [count]]]]"+
+                #"[set_quoted (TEMP_BUILDING_GRAPH_LOC) [argument]]"+
+                #"[set_quoted (TEMP_BUILDING_GRAPH_CONCEPT) [argument [count [count]]]]"+
+                "[stack (TEMP_BUILDING_GRAPH_CONCEPT) [argument]]"+
+                "[stack (TEMP_BUILDING_GRAPH_LOC) [argument [count [count]]]]"+
                 "[python \"self.graphMode = 'graphonly'\"]"+
                 #"[sudo \"self.RunConceptExecute(eval(str(self.entity.Memory['TEMP_BUILDING_GRAPH_CONCEPT'])))\"]"+
-                "[run [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]]]"
+                "[run [concept [peek (TEMP_BUILDING_GRAPH_CONCEPT)]]]"
                 "[python \"self.graphMode = 'nograph'\"]",
 
 
@@ -377,21 +379,22 @@ class Intelligence:
             # NOTE: assumes that TEMP_BUILDING_GRAPH_LOC is a REFERENCE to graph (NOTE: unfortunately this only takes base level concepts....)
             # concept and TEMP_BUILDING_GRAPH_CONCEPT is the LITERAL CONCEPT
             # NAME that we're adding the connection properties to 
-            "connection":""+
-                "[set_quoted (TEMP_CONNECTION_TYPE) [argument]]"+
-                "[set_quoted (TEMP_CONNECTION_END) [argument [count [count]]]]"+
-                "[set_quoted (TEMP_CONNCECTION_INDEX) [length [get [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]]]]]]]"+
-                "[set [get [build_connection_gettable_direct \"reftype\"]] \"direct\"]"+
-                "[set [get [build_connection_gettable_direct \"type\"]] [quotable [concept [value (TEMP_CONNECTION_TYPE)]]]]"+
-                "[set [get [build_connection_gettable_direct \"end\"]] [quotable [concept [value (TEMP_CONNECTION_END)]]]]"+
-                "[set_quoted (TEMP_CONNCECTION_INDEX) [length [get [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_CONNECTION_TYPE)]]]]]]]"+
-                "[set [get [build_connection_gettable_descriptor \"reftype\"]] \"descriptor\"]"+
-                "[set [get [build_connection_gettable_descriptor \"start\"]] [quotable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]]]]"+
-                "[set [get [build_connection_gettable_descriptor \"end\"]] [quotable [concept [value (TEMP_CONNECTION_END)]]]]"+
-                "[set_quoted (TEMP_CONNCECTION_INDEX) [length [get [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_CONNECTION_END)]]]]]]]"+
-                "[set [get [build_connection_gettable_indirect \"reftype\"]] \"indirect\"]"+
-                "[set [get [build_connection_gettable_indirect \"type\"]] [quotable [concept [value (TEMP_CONNECTION_TYPE)]]]]"+
-                "[set [get [build_connection_gettable_indirect \"start\"]] [quotable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]]]]",
+            "connection":"[python \"Core.Connection()\"]",
+            #"connection":""+
+                #"[set_quoted (TEMP_CONNECTION_TYPE) [argument]]"+
+                #"[set_quoted (TEMP_CONNECTION_END) [argument [count [count]]]]"+
+                #"[set_quoted (TEMP_CONNCECTION_INDEX) [length [get [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]]]]]]]"+
+                #"[set [get [build_connection_gettable_direct \"reftype\"]] \"direct\"]"+
+                #"[set [get [build_connection_gettable_direct \"type\"]] [quotable [concept [value (TEMP_CONNECTION_TYPE)]]]]"+
+                #"[set [get [build_connection_gettable_direct \"end\"]] [quotable [concept [value (TEMP_CONNECTION_END)]]]]"+
+                #"[set_quoted (TEMP_CONNCECTION_INDEX) [length [get [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_CONNECTION_TYPE)]]]]]]]"+
+                #"[set [get [build_connection_gettable_descriptor \"reftype\"]] \"descriptor\"]"+
+                #"[set [get [build_connection_gettable_descriptor \"start\"]] [quotable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]]]]"+
+                #"[set [get [build_connection_gettable_descriptor \"end\"]] [quotable [concept [value (TEMP_CONNECTION_END)]]]]"+
+                #"[set_quoted (TEMP_CONNCECTION_INDEX) [length [get [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_CONNECTION_END)]]]]]]]"+
+                #"[set [get [build_connection_gettable_indirect \"reftype\"]] \"indirect\"]"+
+                #"[set [get [build_connection_gettable_indirect \"type\"]] [quotable [concept [value (TEMP_CONNECTION_TYPE)]]]]"+
+                #"[set [get [build_connection_gettable_indirect \"start\"]] [quotable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]]]]",
 
             "build_connection_gettable_direct":""+
                 "[set (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE) [argument]]"+
