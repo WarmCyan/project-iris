@@ -88,6 +88,7 @@ class Intelligence:
 
 
             #"self":"[graph (MAGRAPH) (mutate)]",
+            #"self":"[graph (mutate) (MAGRAPH)][graph (mutate) (MAGRAPH)][print [value (MAGRAPH)]]",
             "self":"[graph (mutate) (MAGRAPH)][print [value (MAGRAPH)]]",
 
             # NOTE: this is the insane test.....

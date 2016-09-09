@@ -37,13 +37,13 @@ LOG_DIALOG_COLOR = "white"
 LOG_PAUSE_TIME = .1 # the amount of time to pause if logging is off to simulate when actually logging (slows down the intelligence significantly so it doesn't immediately jump to completion when logging is turned off)
 
 # log switches
-logCacheOn = True
-logCacheDetailOn = True
-logConceptParseOn = True
-logIntelligenceOn = True
-logSyntaxOn = True
-logExecutionOn = True
-logTimingOn = True
+logCacheOn = False
+logCacheDetailOn = False
+logConceptParseOn = False
+logIntelligenceOn = False
+logSyntaxOn = False
+logExecutionOn = False
+logTimingOn = False
 logErrorOn = True
 logPlatformOn = True
 logDialogOn = True

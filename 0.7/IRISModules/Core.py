@@ -128,7 +128,7 @@ def CheckIfConnectionInGraph(reftype, startConcept = "", typeConcept = "", endCo
             if endConcept != connectionData["end"]: continue
         elif reftype == "indirect":
             if startConcept != connectionData["start"]: continue
-            if endConcept != connectionData["end"]: continue
+            if typeConcept != connectionData["type"]: continue
 
         # passed all tests and still here, we must have found a match
         return True
