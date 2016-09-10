@@ -18,6 +18,12 @@ def Map():
 def Connection():
     ConnectionActuator(platform.CacheRetrieve(0, -1), platform.CacheRetrieve(1, -1))   
 
+def Reconstruct():
+    platform.CacheStore(ReconstructActuator(platform.CacheRetrieve(0, -1)), -2)
+
+def ArrayShift():
+    ArrayShiftActuator(platform.CacheRetrieve(0, -1), platform.CacheRetrieve(1, -1))
+
 # return the actual memory reference for the string, and if it didn't exist,
 # initialize it to an empty dictionary
 def EnsureRetrieveMemory(memoryReferenceString):
@@ -85,6 +91,25 @@ def LoopActuator(index, end, operationCode, runCode):
         index = platform.CacheRetrieve(1, -2)
 
 # =================================================================================
+# ARRAYS
+# =================================================================================
+
+def ArrayShiftActuator(memoryReferenceString, index):
+    arrayMem = platform.Evaluator(memoryReferenceString)
+    
+    length = len(arrayMem.keys())
+
+    for i in range(length, index - 1, -1):
+        if i == index:
+            platform.Executor(memoryReferenceString + "['" + str(i) + "'] = ''")
+            #newLoc = ""
+        else:
+            #newLoc = EnsureRetrieveMemory(memoryReferenceString + "['" + str(i) + "']")
+            #oldLoc = EnsureRetrieveMemory(memoryReferenceString + "['" + str(i-1) + "']")
+            platform.Executor(memoryReferenceString + "['" + str(i) + "'] = " + memoryReferenceString + "['" + str(int(i-1)) + "']")
+            #newLoc = oldLoc
+
+# =================================================================================
 # MAPPING
 # =================================================================================
 
@@ -110,6 +135,19 @@ def MapActuator(conceptString, memoryReferenceString):
         # trim extra space at beginning
         argsString = argsString[1:]
         mapMem[indexString]["args"] = argsString
+
+def ReconstructActuator(memoryReferenceString):
+    mapMem = platform.Evaluator(memoryReferenceString)
+    
+    conceptString = ""
+    for indexKey in mapMem:
+        conceptString += "[" + mapMem[indexKey]["concept"] 
+        argsString = mapMem[indexKey]["args"]
+        if argsString != "":
+            conceptString += " " + argsString
+        conceptString += "]"
+    
+    return conceptString
 
 # =================================================================================
 # GRAPHING

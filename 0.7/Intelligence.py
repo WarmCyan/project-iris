@@ -89,7 +89,7 @@ class Intelligence:
 
             #"self":"[graph (MAGRAPH) (mutate)]",
             #"self":"[graph (mutate) (MAGRAPH)][graph (mutate) (MAGRAPH)][print [value (MAGRAPH)]]",
-            "self":"[graph (mutate) (MAGRAPH)][print [value (MAGRAPH)]]",
+            #"self":"[graph (mutate) (MAGRAPH)][print [value (MAGRAPH)]]",
 
             # NOTE: this is the insane test.....
             #"self":"[map_concept (mutate) (MUTATEMAP)][graph (MAGRAPH) (mutate)][print [reconstruct (MUTATEMAP)]]",
@@ -111,7 +111,8 @@ class Intelligence:
 
             #"self":"[stack (THINGY) \"Yes!\"][print [peek (THINGY)]][stack (THINGY) \"No.\"][print [peek (THINGY)]][unstack (THINGY)][print [peek (THINGY)]][unstack (THINGY)]",
 
-            #"self":"[map (mutate) (MAGRAPH)][print [value (MAGRAPH)]]",
+            "self":"[map (mutate) (MAGRAPH)][array_shift (MAGRAPH) [count [count]]][print [value (MAGRAPH)]]",
+            #"self":"[map (mutate) (MAGRAPH)][array_shift (MAGRAPH) [count [count]]][print [reconstruct (MAGRAPH)]]",
 
             
             # TODO: sincerely think about making current set "copy" and set_quoted the actual set? 
@@ -205,7 +206,10 @@ class Intelligence:
                 #"[set_quoted (TEMP_BUILDING_GRAPH_CONCEPT) [argument [count [count]]]]"+
                 "[stack (TEMP_BUILDING_GRAPH_CONCEPT) [argument]]"+
                 "[stack (TEMP_BUILDING_GRAPH_LOC) [argument [count [count]]]]"+
-                "[python \"self.RunConceptExecute(eval(Core.PeekActuator('TEMP_BUILDING_GRAPH_CONCEPT')), connectionDepth=1, connectionsOnly=True)\"]",
+                "[python \"self.RunConceptExecute(eval(Core.PeekActuator('TEMP_BUILDING_GRAPH_CONCEPT')), connectionDepth=1, connectionsOnly=True)\"]"+
+                "[unstack (TEMP_BUILDING_GRAPH_CONCEPT)]"+
+                "[unstack (TEMP_BUILDING_GRAPH_LOC)]",
+                
                 #"[stack (TEMP_BUILDING_GRAPH_EXECUTE) [concept [peek (TEMP_BUILDING_GRAPH_CONCEPT)]]]"
                 #"[python \"self.graphMode = 'graphonly'\"]"+
                 #"[sudo \"self.RunConceptExecute(eval(str(self.entity.Memory['TEMP_BUILDING_GRAPH_CONCEPT'])))\"]"+
@@ -227,7 +231,7 @@ class Intelligence:
 
             "map":"[python \"Core.Map()\"]",
 
-            #"reconstruct":"[
+            "reconstruct":"[python \"Core.Reconstruct()\"]",
 
             #"reconstruct_map_index":"" + 
                 #"[set (TEMP_RECONSTRUCT_MAP_INDEX) [argument]]" +
@@ -249,12 +253,12 @@ class Intelligence:
                 #"[set (TEMP_RECONSTRUCT_MAP_ADDITIVE) [argument [count [count [count]]]]]" + 
                 #"[return [referable [concept [value (TEMP_RECONSTRUCT_MAP_LOC)]] [referable [value (TEMP_RECONSTRUCT_MAP_INDEX)] [referable [value (TEMP_RECONSTRUCT_MAP_ADDITIVE)]]]]]",
 
-            "reconstruct":"" + 
-                "[set (TEMP_RECURSIVE_RECONSTRUCT_INDEX) [count]]" +
-                "[set_quoted (TEMP_RECURSIVE_RECONSTRUCT_MAPLOC) [argument]]" + 
-                "[set (TEMP_RECURSIVE_RECONSTRUCT_STRING) \"\"]" +
-                "[recursive_reconstruct]" +
-                "[return [value (TEMP_RECURSIVE_RECONSTRUCT_STRING)]]", #takes args, sets memory data, then just calls recursive construct without any args
+            #"reconstruct":"" + 
+            #    "[set (TEMP_RECURSIVE_RECONSTRUCT_INDEX) [count]]" +
+            #    "[set_quoted (TEMP_RECURSIVE_RECONSTRUCT_MAPLOC) [argument]]" + 
+            #    "[set (TEMP_RECURSIVE_RECONSTRUCT_STRING) \"\"]" +
+            #    "[recursive_reconstruct]" +
+            #    "[return [value (TEMP_RECURSIVE_RECONSTRUCT_STRING)]]", #takes args, sets memory data, then just calls recursive construct without any args
             
             "recursive_reconstruct":"[if [< [value (TEMP_RECURSIVE_RECONSTRUCT_INDEX)] [length [value (TEMP_RECURSIVE_RECONSTRUCT_MAPLOC)]]] [runnable [concept (recursive_reconstruct_build)]]]",
 
@@ -279,14 +283,15 @@ class Intelligence:
                 "[set (TEMP_BUILD_ARRAY_GETTABLE_INDEX) [argument [count [count]]]]"+
                 "[return [referable [concept [value (TEMP_BUILD_ARRAY_GETTABLE_LOC)]] [referable [value (TEMP_BUILD_ARRAY_GETTABLE_INDEX)]]]]",
 
+            "array_shift":"[python \"Core.ArrayShift()\"]",
 
-            "array_shift":""+
-                "[set_quoted (TEMP_ARRAY_SHIFT_LOC) [argument]]"+
-                "[set (TEMP_ARRAY_SHIFT_INDEX) [argument [count [count]]]]"+
-                #"[set (TEMP_ARRAY_SHIFT_INDEX)
-                #"[set (TEMP_ARRAY_SHIFT_CURRENT) [- [length [value [value (TEMP_ARRAY_SHIFT_LOC)]]] [dequotable \"1\"]]]"+
-                "[set (TEMP_ARRAY_SHIFT_CURRENT) [length [value [value (TEMP_ARRAY_SHIFT_LOC)]]]]"+
-                "[recursive_array_shift]",
+            #"array_shift":""+
+                #"[set_quoted (TEMP_ARRAY_SHIFT_LOC) [argument]]"+
+                #"[set (TEMP_ARRAY_SHIFT_INDEX) [argument [count [count]]]]"+
+                ##"[set (TEMP_ARRAY_SHIFT_INDEX)
+                ##"[set (TEMP_ARRAY_SHIFT_CURRENT) [- [length [value [value (TEMP_ARRAY_SHIFT_LOC)]]] [dequotable \"1\"]]]"+
+                #"[set (TEMP_ARRAY_SHIFT_CURRENT) [length [value [value (TEMP_ARRAY_SHIFT_LOC)]]]]"+
+                #"[recursive_array_shift]",
 
             "recursive_array_shift":""+
                 "[if [>= [value (TEMP_ARRAY_SHIFT_CURRENT)] [value (TEMP_ARRAY_SHIFT_INDEX)]] [runnable [concept (array_shift_function_dispatch)]]]",
@@ -309,10 +314,10 @@ class Intelligence:
 
 
 
-            "stackable":""+
-                "[set_quoted (TEMP_STACKABLE) [argument]]"+
-                "[python \"self.METAStackable()\"]",
-                #"[return [get [referable [concat [dequotable \"STACK_\"] [concept [value (TEMP_STACKABLE)]]]]]",
+            #"stackable":""+
+                #"[set_quoted (TEMP_STACKABLE) [argument]]"+
+                #"[python \"self.METAStackable()\"]",
+                ##"[return [get [referable [concat [dequotable \"STACK_\"] [concept [value (TEMP_STACKABLE)]]]]]",
                 
             "stack":"[python \"Core.Stack()\"]",
             "peek":"[python \"Core.Peek()\"]",
@@ -399,17 +404,17 @@ class Intelligence:
                 #"[set [get [build_connection_gettable_indirect \"type\"]] [quotable [concept [value (TEMP_CONNECTION_TYPE)]]]]"+
                 #"[set [get [build_connection_gettable_indirect \"start\"]] [quotable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]]]]",
 
-            "build_connection_gettable_direct":""+
-                "[set (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE) [argument]]"+
-                "[return [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]] [referable [value (TEMP_CONNCECTION_INDEX)] [referable [value (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE)]]]]]]",
+            #"build_connection_gettable_direct":""+
+                #"[set (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE) [argument]]"+
+                #"[return [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_BUILDING_GRAPH_CONCEPT)]] [referable [value (TEMP_CONNCECTION_INDEX)] [referable [value (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE)]]]]]]",
 
-            "build_connection_gettable_descriptor":""+
-                "[set (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE) [argument]]"+
-                "[return [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_CONNECTION_TYPE)]] [referable [value (TEMP_CONNCECTION_INDEX)] [referable [value (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE)]]]]]]",
+            #"build_connection_gettable_descriptor":""+
+                #"[set (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE) [argument]]"+
+                #"[return [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_CONNECTION_TYPE)]] [referable [value (TEMP_CONNCECTION_INDEX)] [referable [value (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE)]]]]]]",
 
-            "build_connection_gettable_indirect":""+
-                "[set (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE) [argument]]"+
-                "[return [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_CONNECTION_END)]] [referable [value (TEMP_CONNCECTION_INDEX)] [referable [value (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE)]]]]]]",
+            #"build_connection_gettable_indirect":""+
+                #"[set (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE) [argument]]"+
+                #"[return [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_CONNECTION_END)]] [referable [value (TEMP_CONNCECTION_INDEX)] [referable [value (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE)]]]]]]",
 
 
 
