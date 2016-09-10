@@ -24,6 +24,12 @@ def Reconstruct():
 def ArrayShift():
     ArrayShiftActuator(platform.CacheRetrieve(0, -1), platform.CacheRetrieve(1, -1))
 
+def FindConnectionsByType():
+    FindConnectionsByTypeActuator(platform.CacheRetrieve(0, -1), platform.CacheRetrieve(1, -1), platform.CacheRetrieve(2, -1), platform.CacheRetrieve(3, -1))
+
+def FindConnectionsByEnd():
+    FindConnectionsByEndActuator(platform.CacheRetrieve(0, -1), platform.CacheRetrieve(1, -1), platform.CacheRetrieve(2, -1), platform.CacheRetrieve(3, -1))
+
 # return the actual memory reference for the string, and if it didn't exist,
 # initialize it to an empty dictionary
 def EnsureRetrieveMemory(memoryReferenceString):
@@ -102,12 +108,8 @@ def ArrayShiftActuator(memoryReferenceString, index):
     for i in range(length, index - 1, -1):
         if i == index:
             platform.Executor(memoryReferenceString + "['" + str(i) + "'] = ''")
-            #newLoc = ""
         else:
-            #newLoc = EnsureRetrieveMemory(memoryReferenceString + "['" + str(i) + "']")
-            #oldLoc = EnsureRetrieveMemory(memoryReferenceString + "['" + str(i-1) + "']")
             platform.Executor(memoryReferenceString + "['" + str(i) + "'] = " + memoryReferenceString + "['" + str(int(i-1)) + "']")
-            #newLoc = oldLoc
 
 # =================================================================================
 # MAPPING
@@ -208,3 +210,33 @@ def ConnectionActuator(connectionTypeReferenceString, connectionEndReferenceStri
         endMem[newIndex]["reftype"] = "indirect"
         endMem[newIndex]["start"] = connectionStartConcept
         endMem[newIndex]["type"] = connectionTypeConcept
+
+def FindConnectionsByTypeActuator(graphReferenceString, conceptReferenceString, typeReferenceString, resultsReferenceString):
+    graphMem = EnsureRetrieveMemory(graphReferenceString)
+    resultsMem = EnsureRetrieveMemory(resultsReferenceString)
+    concept = platform.GetReferenceName(conceptReferenceString)
+    typeConcept = platform.GetReferenceName(typeReferenceString)
+
+    resultsIndex = len(resultsMem.keys())
+
+    for indexKey in graphMem[concept]:
+        entry = graphMem[concept][indexKey]
+
+        if entry["reftype"] == "direct" and entry["type"] == typeConcept:
+            resultsMem[str(resultsIndex)] = str(entry["end"])
+            resultsIndex += 1
+
+def FindConnectionsByEndActuator(graphReferenceString, typeReferenceString, conceptReferenceString, resultsReferenceString):
+    graphMem = EnsureRetrieveMemory(graphReferenceString)
+    resultsMem = EnsureRetrieveMemory(resultsReferenceString)
+    typeConcept = platform.GetReferenceName(typeReferenceString)
+    concept = platform.GetReferenceName(conceptReferenceString)
+
+    resultsIndex = len(resultsMem.keys())
+
+    for indexKey in graphMem[concept]:
+        entry = graphMem[concept][indexKey]
+
+        if entry["reftype"] == "indirect" and entry["type"] == typeConcept:
+            resultsMem[str(resultsIndex)] = str(entry["start"])
+            resultsIndex += 1

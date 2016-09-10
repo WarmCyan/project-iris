@@ -111,9 +111,10 @@ class Intelligence:
 
             #"self":"[stack (THINGY) \"Yes!\"][print [peek (THINGY)]][stack (THINGY) \"No.\"][print [peek (THINGY)]][unstack (THINGY)][print [peek (THINGY)]][unstack (THINGY)]",
 
-            "self":"[map (mutate) (MAGRAPH)][array_shift (MAGRAPH) [count [count]]][print [value (MAGRAPH)]]",
+            #"self":"[map (mutate) (MAGRAPH)][array_shift (MAGRAPH) [count [count]]][print [value (MAGRAPH)]]",
             #"self":"[map (mutate) (MAGRAPH)][array_shift (MAGRAPH) [count [count]]][print [reconstruct (MAGRAPH)]]",
 
+            "self":"[graph (mutate) (GRAPH)][findconnections_by_end (GRAPH) (needs) (referable) (RESULTS)][print [value (RESULTS)]]",
             
             # TODO: sincerely think about making current set "copy" and set_quoted the actual set? 
             # NOTE: ^ if you think about it, it makes more sense to just have a
@@ -240,12 +241,12 @@ class Intelligence:
                 #"[set_quoted (STORED_GETABLE_1) [reconstruct_map_index_gettable [value (TEMP_RECONSTRUCT_MAP_INDEX)] [value (TEMP_RECONSTRUCT_MAP_LOC)] \"args\"]]" + 
                 #"[return [runnable [value [get [value (STORED_GETABLE_0)]]] [value [get [value (STORED_GETABLE_1)]]]]]",
 #
-            "reconstruct_map_index":"" + 
-                "[set (TEMP_RECONSTRUCT_MAP_INDEX) [argument]]" +
-                "[set_quoted (TEMP_RECONSTRUCT_MAP_LOC) [argument [count [count]]]]" +
-                "[set_quoted (STORED_GETABLE_0) [build_array_gettable_additive [value (TEMP_RECONSTRUCT_MAP_LOC)] [value (TEMP_RECONSTRUCT_MAP_INDEX)] \"concept\"]]" + 
-                "[set_quoted (STORED_GETABLE_1) [build_array_gettable_additive [value (TEMP_RECONSTRUCT_MAP_LOC)] [value (TEMP_RECONSTRUCT_MAP_INDEX)] \"args\"]]" + 
-                "[return [runnable [value [get [value (STORED_GETABLE_0)]]] [value [get [value (STORED_GETABLE_1)]]]]]",
+            #"reconstruct_map_index":"" + 
+                #"[set (TEMP_RECONSTRUCT_MAP_INDEX) [argument]]" +
+                #"[set_quoted (TEMP_RECONSTRUCT_MAP_LOC) [argument [count [count]]]]" +
+                #"[set_quoted (STORED_GETABLE_0) [build_array_gettable_additive [value (TEMP_RECONSTRUCT_MAP_LOC)] [value (TEMP_RECONSTRUCT_MAP_INDEX)] \"concept\"]]" + 
+                #"[set_quoted (STORED_GETABLE_1) [build_array_gettable_additive [value (TEMP_RECONSTRUCT_MAP_LOC)] [value (TEMP_RECONSTRUCT_MAP_INDEX)] \"args\"]]" + 
+                #"[return [runnable [value [get [value (STORED_GETABLE_0)]]] [value [get [value (STORED_GETABLE_1)]]]]]",
 
             #"reconstruct_map_index_gettable":"" +
                 #"[set (TEMP_RECONSTRUCT_MAP_INDEX) [argument]]" +
@@ -260,16 +261,16 @@ class Intelligence:
             #    "[recursive_reconstruct]" +
             #    "[return [value (TEMP_RECURSIVE_RECONSTRUCT_STRING)]]", #takes args, sets memory data, then just calls recursive construct without any args
             
-            "recursive_reconstruct":"[if [< [value (TEMP_RECURSIVE_RECONSTRUCT_INDEX)] [length [value (TEMP_RECURSIVE_RECONSTRUCT_MAPLOC)]]] [runnable [concept (recursive_reconstruct_build)]]]",
+            #"recursive_reconstruct":"[if [< [value (TEMP_RECURSIVE_RECONSTRUCT_INDEX)] [length [value (TEMP_RECURSIVE_RECONSTRUCT_MAPLOC)]]] [runnable [concept (recursive_reconstruct_build)]]]",
 
             # temp recursive reconstruct index
             # temp recursive reconstruct string
             # temp recursive reconstruct map loc
  
-            "recursive_reconstruct_build":"" +
-                "[set_quoted (TEMP_RECURSIVE_RECONSTRUCT_STRING) [concat [value (TEMP_RECURSIVE_RECONSTRUCT_STRING)] [reconstruct_map_index [value (TEMP_RECURSIVE_RECONSTRUCT_INDEX)] [value (TEMP_RECURSIVE_RECONSTRUCT_MAPLOC)]]]]" +
-                "[set (TEMP_RECURSIVE_RECONSTRUCT_INDEX) [count [value (TEMP_RECURSIVE_RECONSTRUCT_INDEX)]]]" +
-                "[recursive_reconstruct]",
+            #"recursive_reconstruct_build":"" +
+                #"[set_quoted (TEMP_RECURSIVE_RECONSTRUCT_STRING) [concat [value (TEMP_RECURSIVE_RECONSTRUCT_STRING)] [reconstruct_map_index [value (TEMP_RECURSIVE_RECONSTRUCT_INDEX)] [value (TEMP_RECURSIVE_RECONSTRUCT_MAPLOC)]]]]" +
+                #"[set (TEMP_RECURSIVE_RECONSTRUCT_INDEX) [count [value (TEMP_RECURSIVE_RECONSTRUCT_INDEX)]]]" +
+                #"[recursive_reconstruct]",
 
 
             "build_array_gettable_additive":""+
@@ -293,21 +294,21 @@ class Intelligence:
                 #"[set (TEMP_ARRAY_SHIFT_CURRENT) [length [value [value (TEMP_ARRAY_SHIFT_LOC)]]]]"+
                 #"[recursive_array_shift]",
 
-            "recursive_array_shift":""+
-                "[if [>= [value (TEMP_ARRAY_SHIFT_CURRENT)] [value (TEMP_ARRAY_SHIFT_INDEX)]] [runnable [concept (array_shift_function_dispatch)]]]",
+            #"recursive_array_shift":""+
+                #"[if [>= [value (TEMP_ARRAY_SHIFT_CURRENT)] [value (TEMP_ARRAY_SHIFT_INDEX)]] [runnable [concept (array_shift_function_dispatch)]]]",
 
-            "array_shift_function_dispatch":"[if [= [value (TEMP_ARRAY_SHIFT_CURRENT)] [value (TEMP_ARRAY_SHIFT_INDEX)]] [runnable [concept (array_shift_function_equal)]] [runnable [concept (array_shift_function_normal)]]]",
+            #"array_shift_function_dispatch":"[if [= [value (TEMP_ARRAY_SHIFT_CURRENT)] [value (TEMP_ARRAY_SHIFT_INDEX)]] [runnable [concept (array_shift_function_equal)]] [runnable [concept (array_shift_function_normal)]]]",
 
 
-            "array_shift_function_normal":""+
-                "[set [get [build_array_gettable [value (TEMP_ARRAY_SHIFT_LOC)] [value (TEMP_ARRAY_SHIFT_CURRENT)]]] [value [get [build_array_gettable [value (TEMP_ARRAY_SHIFT_LOC)] [- [value (TEMP_ARRAY_SHIFT_CURRENT)] [dequotable \"1\"]]]]]]"+
-                "[set (TEMP_ARRAY_SHIFT_CURRENT) [- [value (TEMP_ARRAY_SHIFT_CURRENT)] [dequotable \"1\"]]]"+
-                "[recursive_array_shift]",
+            #"array_shift_function_normal":""+
+                #"[set [get [build_array_gettable [value (TEMP_ARRAY_SHIFT_LOC)] [value (TEMP_ARRAY_SHIFT_CURRENT)]]] [value [get [build_array_gettable [value (TEMP_ARRAY_SHIFT_LOC)] [- [value (TEMP_ARRAY_SHIFT_CURRENT)] [dequotable \"1\"]]]]]]"+
+                #"[set (TEMP_ARRAY_SHIFT_CURRENT) [- [value (TEMP_ARRAY_SHIFT_CURRENT)] [dequotable \"1\"]]]"+
+                #"[recursive_array_shift]",
 
-            "array_shift_function_equal":""+
-                "[set [get [build_array_gettable [value (TEMP_ARRAY_SHIFT_LOC)] [value (TEMP_ARRAY_SHIFT_CURRENT)]]] \"\"]"+
-                "[set (TEMP_ARRAY_SHIFT_CURRENT) [- [value (TEMP_ARRAY_SHIFT_CURRENT)] [dequotable \"1\"]]]"+
-                "[recursive_array_shift]",
+            #"array_shift_function_equal":""+
+                #"[set [get [build_array_gettable [value (TEMP_ARRAY_SHIFT_LOC)] [value (TEMP_ARRAY_SHIFT_CURRENT)]]] \"\"]"+
+                #"[set (TEMP_ARRAY_SHIFT_CURRENT) [- [value (TEMP_ARRAY_SHIFT_CURRENT)] [dequotable \"1\"]]]"+
+                #"[recursive_array_shift]",
 
 
             
@@ -417,31 +418,34 @@ class Intelligence:
                 #"[return [referable [concept [value (TEMP_BUILDING_GRAPH_LOC)]] [referable [concept [value (TEMP_CONNECTION_END)]] [referable [value (TEMP_CONNCECTION_INDEX)] [referable [value (TEMP_BUILD_CONNECTION_GETTABLE_ADDITIVE)]]]]]]",
 
 
-
-            "findconnections_by_type":""+
-                "[set_quoted (TEMP_ARG_0) [argument]]"+ # loc
-                "[set_quoted (TEMP_ARG_1) [argument [count [count]]]]"+ # concept
-                "[set_quoted (TEMP_ARG_2) [argument [count [count [count]]]]]"+ # type
-                "[set_quoted (TEMP_ARG_3) [argument [count [count [count [count]]]]]]"+ # where to store results
-                "[set_quoted (TEMP_FIND_CONNECTIONS_GRAPHLOC) [value (TEMP_ARG_0)]]"+
-                "[set_quoted (TEMP_FIND_CONNECTIONS_CONCEPT) [concept [value (TEMP_ARG_1)]]]"+
-                "[set_quoted (TEMP_FIND_CONNECTIONS_TYPE) [concept [value (TEMP_ARG_2)]]]"+
-                "[set_quoted (TEMP_FIND_CONNECTIONS_RESULTLOC) [value (TEMP_ARG_3)]]"+
-                #"[set [value (TEMP_FIND_CONNECTIONS_RESULTLOC)] [dequotable \"{}\"]]"+ # ensures place exists
-                "[python \"self.METAFindConnectionsByType()\"]",
+            "findconnections_by_type":"[python \"Core.FindConnectionsByType()\"]",
+            "findconnections_by_end":"[python \"Core.FindConnectionsByEnd()\"]",
 
 
-            "findconnections_by_end":""+
-                "[set_quoted (TEMP_ARG_0) [argument]]"+ # loc
-                "[set_quoted (TEMP_ARG_1) [argument [count [count]]]]"+ # type
-                "[set_quoted (TEMP_ARG_2) [argument [count [count [count]]]]]"+ # end concept
-                "[set_quoted (TEMP_ARG_3) [argument [count [count [count [count]]]]]]"+ # where to store results
-                "[set_quoted (TEMP_FIND_CONNECTIONS_GRAPHLOC) [value (TEMP_ARG_0)]]"+
-                "[set_quoted (TEMP_FIND_CONNECTIONS_TYPE) [concept [value (TEMP_ARG_1)]]]"+
-                "[set_quoted (TEMP_FIND_CONNECTIONS_CONCEPT) [concept [value (TEMP_ARG_2)]]]"+
-                "[set_quoted (TEMP_FIND_CONNECTIONS_RESULTLOC) [value (TEMP_ARG_3)]]"+
-                #"[set [value (TEMP_FIND_CONNECTIONS_RESULTLOC)] [dequotable \"{}\"]]"+ # ensures place exists
-                "[python \"self.METAFindConnectionsByEnd()\"]",
+            #"findconnections_by_type":""+
+                #"[set_quoted (TEMP_ARG_0) [argument]]"+ # loc
+                #"[set_quoted (TEMP_ARG_1) [argument [count [count]]]]"+ # concept
+                #"[set_quoted (TEMP_ARG_2) [argument [count [count [count]]]]]"+ # type
+                #"[set_quoted (TEMP_ARG_3) [argument [count [count [count [count]]]]]]"+ # where to store results
+                #"[set_quoted (TEMP_FIND_CONNECTIONS_GRAPHLOC) [value (TEMP_ARG_0)]]"+
+                #"[set_quoted (TEMP_FIND_CONNECTIONS_CONCEPT) [concept [value (TEMP_ARG_1)]]]"+
+                #"[set_quoted (TEMP_FIND_CONNECTIONS_TYPE) [concept [value (TEMP_ARG_2)]]]"+
+                #"[set_quoted (TEMP_FIND_CONNECTIONS_RESULTLOC) [value (TEMP_ARG_3)]]"+
+                ##"[set [value (TEMP_FIND_CONNECTIONS_RESULTLOC)] [dequotable \"{}\"]]"+ # ensures place exists
+                #"[python \"self.METAFindConnectionsByType()\"]",
+
+
+            #"findconnections_by_end":""+
+                #"[set_quoted (TEMP_ARG_0) [argument]]"+ # loc
+                #"[set_quoted (TEMP_ARG_1) [argument [count [count]]]]"+ # type
+                #"[set_quoted (TEMP_ARG_2) [argument [count [count [count]]]]]"+ # end concept
+                #"[set_quoted (TEMP_ARG_3) [argument [count [count [count [count]]]]]]"+ # where to store results
+                #"[set_quoted (TEMP_FIND_CONNECTIONS_GRAPHLOC) [value (TEMP_ARG_0)]]"+
+                #"[set_quoted (TEMP_FIND_CONNECTIONS_TYPE) [concept [value (TEMP_ARG_1)]]]"+
+                #"[set_quoted (TEMP_FIND_CONNECTIONS_CONCEPT) [concept [value (TEMP_ARG_2)]]]"+
+                #"[set_quoted (TEMP_FIND_CONNECTIONS_RESULTLOC) [value (TEMP_ARG_3)]]"+
+                ##"[set [value (TEMP_FIND_CONNECTIONS_RESULTLOC)] [dequotable \"{}\"]]"+ # ensures place exists
+                #"[python \"self.METAFindConnectionsByEnd()\"]",
 
 
             "construct_random":""+
