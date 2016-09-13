@@ -94,7 +94,7 @@ def LoopActuator(index, end, operationCode, runCode):
         platform.entity.Memory["TEMP_LOOP_INDEX"] = index
         platform.RunConceptExecute(runCode)
         platform.RunConceptExecute(operationCode)
-        index = platform.CacheRetrieve(1, -2)
+        index = platform.CacheRetrieve(0, -2)
 
 # =================================================================================
 # ARRAYS

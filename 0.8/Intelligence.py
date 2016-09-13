@@ -128,8 +128,18 @@ class Intelligence:
             #"self":"[map (mutate) (MUTATEMAP)][graph (mutate) (MAGRAPH)][print [reconstruct (MUTATEMAP)]][print [value (MAGRAPH)]]",
 
             # NOTE: getting input
-            "self":"[set (INPUT) [getinput]][print [value (INPUT)]]",
+            #"self":"[set (INPUT) [getinput]][print [value (INPUT)]]",
 
+            # NOTE: conditionals
+            #"self":"[if [= \"5\" \"6\"] [runnable [concept (print)] [runnable [concept (dequotable)] \"They equal!\"]] [runnable [concept (print)] [runnable [concept (dequotable)] \"They no equal :(\"]]]",
+
+            # NOTE: connection searching
+            #"self":"[graph (mutate) (GRAPH)][findconnections_by_type (GRAPH) (mutate) (needs) (RESULTS)][print [value (RESULTS)]]",
+            #"self":"[graph (mutate) (GRAPH)][findconnections_by_end (GRAPH) (needs) (referable) (RESULTS)][print [value (RESULTS)]]",
+
+            # NOTE: looping
+            #"self":"[loop [dequotable \"0\"] [dequotable \"50\"] [runnable [concept (return)] [runnable [concept (+)] [concat [runnable [concept (value)] [referable [concept (TEMP_LOOP_INDEX)]]] [concat [dequotable \" \"] [runnable [concept (count)] [runnable [concept (count)]]]]]]] [runnable [concept (print)] [runnable [concept (value)] [referable [concept (TEMP_LOOP_INDEX)]]]]]",
+            
 
             # mutate needs:
             #   1. List concepts
@@ -137,7 +147,6 @@ class Intelligence:
             #   3. Get self string, 
             #   4. Get all base and first level concepts
             #   5. Randomly choose one to modify with the self string
-
 
 
             "mutate":"[-> (needs) (referable)][-> (is) (thing)][print [dequotable \"mutating!\"]]", # theoretically, this needs some kind of way to list all the available concepts.
