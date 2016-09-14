@@ -16,7 +16,13 @@ def Map():
     MapActuator(platform.Evaluator(platform.CacheRetrieve(0, -1)), platform.CacheRetrieve(1, -1))
 
 def Connection():
-    ConnectionActuator(platform.CacheRetrieve(0, -1), platform.CacheRetrieve(1, -1))   
+    argumentWeight = platform.CacheRetrieve(2, -1)
+    if argumentWeight != None: 
+        argumentWeight = argumentWeight.strip("\"")
+        weight = float(argumentWeight)
+    else: weight = 1.0
+    print("WEIGHT: " + str(weight))
+    ConnectionActuator(platform.CacheRetrieve(0, -1), platform.CacheRetrieve(1, -1), weight)   
 
 def Reconstruct():
     platform.CacheStore(ReconstructActuator(platform.CacheRetrieve(0, -1)), -2)
@@ -176,7 +182,7 @@ def CheckIfConnectionInGraph(reftype, startConcept = "", typeConcept = "", endCo
     return False
 
 # NOTE: requires TEMP_BUILDING_GRAPH_LOC and TEMP_BUILDING_GRAPH_CONCEPT stack to be set (both of which should be reference strings)
-def ConnectionActuator(connectionTypeReferenceString, connectionEndReferenceString):
+def ConnectionActuator(connectionTypeReferenceString, connectionEndReferenceString, weight=1.0):
     connectionTypeConcept = platform.GetReferenceName(connectionTypeReferenceString)
     connectionEndConcept = platform.GetReferenceName(connectionEndReferenceString)
     connectionStartConcept = platform.GetReferenceName(PeekActuator("TEMP_BUILDING_GRAPH_CONCEPT"))
@@ -194,6 +200,7 @@ def ConnectionActuator(connectionTypeReferenceString, connectionEndReferenceStri
         startMem[newIndex]["reftype"] = "direct"
         startMem[newIndex]["type"] = connectionTypeConcept
         startMem[newIndex]["end"] = connectionEndConcept
+        startMem[newIndex]["weight"] = weight
 
     # descriptor connection
     if not CheckIfConnectionInGraph("descriptor", endConcept=connectionEndConcept, startConcept=connectionStartConcept, conceptMem=typeMem):
@@ -202,6 +209,7 @@ def ConnectionActuator(connectionTypeReferenceString, connectionEndReferenceStri
         typeMem[newIndex]["reftype"] = "descriptor"
         typeMem[newIndex]["start"] = connectionStartConcept
         typeMem[newIndex]["end"] = connectionEndConcept
+        typeMem[newIndex]["weight"] = weight
 
     # indirect connection
     if not CheckIfConnectionInGraph("indirect", typeConcept=connectionTypeConcept, startConcept=connectionStartConcept, conceptMem=endMem):
@@ -210,6 +218,7 @@ def ConnectionActuator(connectionTypeReferenceString, connectionEndReferenceStri
         endMem[newIndex]["reftype"] = "indirect"
         endMem[newIndex]["start"] = connectionStartConcept
         endMem[newIndex]["type"] = connectionTypeConcept
+        endMem[newIndex]["weight"] = weight
 
 def FindConnectionsByTypeActuator(graphReferenceString, conceptReferenceString, typeReferenceString, resultsReferenceString):
     graphMem = EnsureRetrieveMemory(graphReferenceString)

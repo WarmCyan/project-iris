@@ -4,7 +4,7 @@ class Intelligence:
             #"self":"[mutate (self)][query (approval)][remember (self) (approval)][self]",
 
             
-            "self":"[print [+ [dequotable \"5\"] [dequotable \"4\"]]]",
+            #"self":"[print [+ [dequotable \"5\"] [dequotable \"4\"]]]",
 
             
 
@@ -20,7 +20,7 @@ class Intelligence:
             #"self":"[if [= \"5\" \"6\"] [runnable [concept (print)] [runnable [concept (dequotable)] \"They equal!\"]] [runnable [concept (print)] [runnable [concept (dequotable)] \"They no equal :(\"]]]",
 
             # NOTE: connection searching
-            #"self":"[graph (mutate) (GRAPH)][findconnections_by_type (GRAPH) (mutate) (needs) (RESULTS)][print [value (RESULTS)]]",
+            "self":"[graph (mutate) (GRAPH)][findconnections_by_type (GRAPH) (mutate) (needs) (RESULTS)][print [value (RESULTS)]]",
             #"self":"[graph (mutate) (GRAPH)][findconnections_by_end (GRAPH) (needs) (referable) (RESULTS)][print [value (RESULTS)]]",
 
             # NOTE: looping
@@ -35,7 +35,7 @@ class Intelligence:
             #   5. Randomly choose one to modify with the self string
 
 
-            "mutate":"[-> (needs) (referable)][-> (is) (thing)][print [dequotable \"mutating!\"]]", # theoretically, this needs some kind of way to list all the available concepts.
+            "mutate":"[-> (needs) (referable)][-> (is) (thing) \"0.5\"][print [dequotable \"mutating!\"]]", # theoretically, this needs some kind of way to list all the available concepts.
             "query":"",
             "remember":"",
             "recall":"",

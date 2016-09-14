@@ -38,13 +38,13 @@ LOG_DIALOG_COLOR = "white"
 LOG_PAUSE_TIME = .1 # the amount of time to pause if logging is off to simulate when actually logging (slows down the intelligence significantly so it doesn't immediately jump to completion when logging is turned off)
 
 # log switches
-logCacheOn = False
-logCacheDetailOn = False
-logConceptParseOn = False
-logIntelligenceOn = False
-logSyntaxOn = False
-logExecutionOn = False
-logTimingOn = False
+logCacheOn = True
+logCacheDetailOn = True
+logConceptParseOn = True
+logIntelligenceOn = True
+logSyntaxOn = True
+logExecutionOn = True
+logTimingOn = True
 logErrorOn = True
 logPlatformOn = True
 logDialogOn = True
@@ -723,72 +723,3 @@ class IntelligencePlatform:
     def Evaluator(self, evaluate): return eval(evaluate)
 
     def Executor(self, execute): exec(execute)
-
-    # NOTE: don't need!!!
-    #def METAStackable(self):
-    #    self.CacheStore("self.entity.Memory[\"STACK_" + self.GetReferenceName(self.entity.Memory["TEMP_STACKABLE"]) + "\"]", -2)
-
-    def METAStack(self): self.METAMETAStacker("TEMP_STACK_CONCEPT", "TEMP_STACK_VALUE")
-
-    def METAPeek(self): self.CacheStore(self.METAMETAPeeker("TEMP_PEEK_CONCEPT"), -2)
-
-    def METAUnstack(self): self.METAMETAUnstacker("TEMP_UNSTACK_CONCEPT")
-
-    def METAMETAStacker(self, loc, val, verbatim=False):
-        if not verbatim: conceptMem = self.METAMETAStackBuilder(loc)
-        else: conceptMem = self.METAMETAStackBuilderVerbatim(loc)
-        length = len(conceptMem.keys())
-        conceptMem[str(length)] = self.entity.Memory[val]
-
-    def METAMETAPeeker(self, loc, verbatim=False):
-        if not verbatim: conceptMem = self.METAMETAStackBuilder(loc)
-        else: conceptMem = self.METAMETAStackBuilderVerbatim(loc)
-        length = len(conceptMem.keys())
-        return conceptMem[str(length - 1)]
-
-    def METAMETAUnstacker(self, loc, verbatim=False):
-        if not verbatim: conceptMem = self.METAMETAStackBuilder(loc)
-        else: conceptMem = self.METAMETAStackBuilderVerbatim(loc)
-        length = len(conceptMem.keys())
-        del conceptMem[str(length - 1)]
-
-    def METAMETAStackBuilderVerbatim(self, loc):
-        concept = str("self.entity.Memory[\"STACK_" + loc + "\"]")
-
-        # make sure it exists
-        try: eval(concept)
-        except:
-            exec(concept + " = {}")
-
-        conceptMem = eval(concept)
-        return conceptMem
-        
-        
-    def METAMETAStackBuilder(self, loc):
-        concept = str("self.entity.Memory[\"STACK_" + self.GetReferenceName(self.entity.Memory[loc]) + "\"]")
-
-        # make sure it exists
-        try: eval(concept)
-        except:
-            exec(concept + " = {}")
-
-        conceptMem = eval(concept)
-        return conceptMem
-        
-    def METALoop(self):
-        indexMem = self.METAMETAPeeker("TEMP_LOOP_INDEX", True)
-        endMem = self.METAMETAPeeker("TEMP_LOOP_END", True)
-        while (str(indexMem) != str(endMem)):
-            self.RunConceptExecute(self.METAMETAPeeker("TEMP_LOOP_RUN", True)) 
-            self.entity.Memory["TEMP_LOOP_INDEX_TEMP"] = indexMem
-            self.METAMETAUnstacker("TEMP_LOOP_INDEX", True)
-            self.RunConceptExecute(self.METAMETAPeeker("TEMP_LOOP_OPERATION", True))
-            self.entity.Memory["TEMP_LOOP_INDEX_TEMP"] = self.CacheRetrieve(0, -2)
-            self.METAMETAStacker("TEMP_LOOP_INDEX", "TEMP_LOOP_INDEX_TEMP", True)
-
-            indexMem = self.METAMETAPeeker("TEMP_LOOP_INDEX", True)
-            endMem = self.METAMETAPeeker("TEMP_LOOP_END", True)
-
-
-
-
