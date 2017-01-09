@@ -97,7 +97,19 @@ class IRIS:
         #exec(python)
 
 
-    def execute(instruction):
-        if instruction[0] == "python": exec(instruction[1]); return
+    def execute(self, instruction):
+        if instruction[0] == "python": 
+            #print("executing python " + str(instruction[1])) # DEBUG
+            exec(instruction[1]);
+            return
         
-          
+        # set current instruction and arguments
+        self.set("&", instruction)
+        self.set("@", instruction[1:])
+
+        # set current instruction arguments
+        instructionContents = self.get(instruction[0] + "*")
+        for i in range(0, len(instructionContents)):
+            # set argument counter
+            self.set("#", i)
+            self.execute(instructionContents[i])
