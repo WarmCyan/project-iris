@@ -49,6 +49,7 @@ class IRIS:
             # construct non-existant parts
             for i in range(0, len(parts) - 1):
                 part = parts[i]
+                #print("On part: " + str(part)) # DEBUG
 
                 try: slot[part]
                 except KeyError:
@@ -57,9 +58,25 @@ class IRIS:
                     try: 
                         parts[i+1] = int(parts[i+1]) 
                         number = True
+                        #print("Making this part of prev an array") # DEBUG
                         slot[part] = []
                     except ValueError: 
+                        #print("Making this part of prev a dictionary") # DEBUG
                         slot[part] = {}
+                except IndexError:
+                    # check next one
+                    number = False
+                    try: 
+                        parts[i+1] = int(parts[i+1]) 
+                        number = True
+                        #print("INDEX - Making this part of prev an array") # DEBUG
+                        #slot[part] = []
+                        slot.append([])
+                    except ValueError: 
+                        #print("INDEX - Making this part of prev a dictionary") # DEBUG
+                        #slot[part] = {}
+                        slot.append({})
+                    
 
                 slot = slot[part]
                     
