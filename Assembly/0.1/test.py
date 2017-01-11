@@ -3,22 +3,42 @@ class IRIS:
 
     memory = {}
 
+    numSets = 0
+    numGets = 0
+    numExecutions = 0
     
     def __init__(self):
-        pass
+        self.numSets = 0
+        self.numGets = 0
+        self.numExecutions = 0
+
+    def printStats(self):
+        print("\n\n\tSets:\t\t" + str(self.numSets))
+        print("\tGets:\t\t" + str(self.numGets))
+        print("\tExecutions:\t" + str(self.numExecutions))
+
+    def tryReturnGet(self, query):
+        if str(query).endswith("*"):
+            return self.get(query)
+        return query
 
     def get(self, query):
+        self.numGets += 1
+        print("attempting to get '" + str(query) + "'...") # DEBUG
         # check if just the concept, not getting in it
         if "*" not in str(query): 
             if "/" in str(query):
                 parts = str(query).split("/")
-                return parts[len(parts) - 1]
-            return query
+                #return parts[len(parts) - 1]
+                return self.tryReturnGet(parts[len(parts) - 1])
+            #return query
+            return self.tryReturnGet(query)
 
         query = str(query).replace("*", "")
 
         # check if just a simple thing
-        if query in self.memory.keys(): return self.memory[query]
+        #if query in self.memory.keys(): return self.memory[query]
+        if query in self.memory.keys(): return self.tryReturnGet(self.memory[query])
 
         # break up structure
         if "/" in str(query):
@@ -38,9 +58,12 @@ class IRIS:
                 index += 1
                 
                 result = result[part]
-            return result
+            #return result
+            return self.tryReturnGet(result)
 
     def set(self, query, obj):
+        self.numSets += 1
+        print("Setting '" + str(query) + "' to '" + str(obj) + "'...") # DEBUG
         # break up structure
         if "/" in str(query):
             parts = str(query).split("/")
@@ -98,6 +121,8 @@ class IRIS:
 
 
     def execute(self, instruction):
+        self.numExecutions += 1
+        print("Executing '" + str(instruction) + "'...") # DEBUG
         if instruction[0] == "python": 
             #print("executing python " + str(instruction[1])) # DEBUG
             exec(instruction[1]);

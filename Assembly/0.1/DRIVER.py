@@ -21,6 +21,7 @@ instance = IRIS()
 #print(str(instance.memory))
 
 def timeTests():
+    testAmount = 100000
 
     assignment0 = time.clock()
     for i in range(0, testAmount):
@@ -92,7 +93,20 @@ def timeTests():
 
     print("control complex get = \t\t\t" + str(control1gettime))
 
-# initial test instruction
-instance.set("print", [["python", "# print\nprint(self.get(\"@/0*\"))"]])
 
-instance.execute(["print", "hello"])
+
+# initial test instruction
+instance.set("print", [["python", "# print\nprint(\"> \" + str(self.get(\"@/0*\")))"]])
+instance.set("plus", [["python", "# plus\nself.set(self.get(\"@/0*\"), self.get(\"@/1*\") + self.get(\"@/2*\"))"]])
+
+instance.set("doThing", [["plus", "thing", 2, 5],["print", "thing*"]])
+
+
+instance.execute(["doThing"])
+
+
+instance.printStats()
+
+#instance.execute(["plus", "thing", 2, 5])
+#print(str(instance.memory))
+#instance.execute(["print", "thing*"])
