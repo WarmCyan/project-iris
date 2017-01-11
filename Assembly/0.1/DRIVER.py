@@ -94,15 +94,34 @@ def timeTests():
     print("control complex get = \t\t\t" + str(control1gettime))
 
 
-
-# initial test instruction
-instance.set("print", [["python", "# print\nprint(\"> \" + str(self.get(\"@/0*\")))"]])
-instance.set("plus", [["python", "# plus\nself.set(self.get(\"@/0*\"), self.get(\"@/1*\") + self.get(\"@/2*\"))"]])
-
+time1 = time.clock()
+instance.set("print", [["python", "#: print\nprint(\"> \" + str(self.get(\"@/0*\")))"]])
+instance.set("plus", [["python", "#: plus\nself.set(self.get(\"@/0*\"), self.get(\"@/1*\") + self.get(\"@/2*\"))"]])
 instance.set("doThing", [["plus", "thing", 2, 5],["print", "thing*"]])
+#instance.execute(["doThing"])
 
 
+
+
+
+time1 = time.clock()
+#instance.execute(["plus", "thing", 2, 5])
 instance.execute(["doThing"])
+time1time = time.clock() - time1
+
+
+instance.importthing()
+instance.set("doThing", [["python", "self.doThing(self)"]])
+#instance.set("plus", [["python", "self.plus(self)"]])
+
+time2 = time.clock()
+#instance.execute(["plus", "thing", 2, 5])
+instance.execute(["doThing"])
+time2time = time.clock() - time2
+
+
+print("\ntime1 - \t" + str(time1time))
+print("\ntime2 - \t" + str(time2time))
 
 
 instance.printStats()
@@ -110,3 +129,4 @@ instance.printStats()
 #instance.execute(["plus", "thing", 2, 5])
 #print(str(instance.memory))
 #instance.execute(["print", "thing*"])
+

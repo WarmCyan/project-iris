@@ -24,7 +24,7 @@ class IRIS:
 
     def get(self, query):
         self.numGets += 1
-        print("attempting to get '" + str(query) + "'...") # DEBUG
+        #print("attempting to get '" + str(query) + "'...") # DEBUG
         # check if just the concept, not getting in it
         if "*" not in str(query): 
             if "/" in str(query):
@@ -63,7 +63,7 @@ class IRIS:
 
     def set(self, query, obj):
         self.numSets += 1
-        print("Setting '" + str(query) + "' to '" + str(obj) + "'...") # DEBUG
+        #print("Setting '" + str(query) + "' to '" + str(obj) + "'...") # DEBUG
         # break up structure
         if "/" in str(query):
             parts = str(query).split("/")
@@ -72,7 +72,6 @@ class IRIS:
             # construct non-existant parts
             for i in range(0, len(parts) - 1):
                 part = parts[i]
-                #print("On part: " + str(part)) # DEBUG
 
                 try: slot[part]
                 except KeyError:
@@ -81,10 +80,8 @@ class IRIS:
                     try: 
                         parts[i+1] = int(parts[i+1]) 
                         number = True
-                        #print("Making this part of prev an array") # DEBUG
                         slot[part] = []
                     except ValueError: 
-                        #print("Making this part of prev a dictionary") # DEBUG
                         slot[part] = {}
                 except IndexError:
                     # check next one
@@ -92,12 +89,8 @@ class IRIS:
                     try: 
                         parts[i+1] = int(parts[i+1]) 
                         number = True
-                        #print("INDEX - Making this part of prev an array") # DEBUG
-                        #slot[part] = []
                         slot.append([])
                     except ValueError: 
-                        #print("INDEX - Making this part of prev a dictionary") # DEBUG
-                        #slot[part] = {}
                         slot.append({})
                     
 
@@ -116,13 +109,10 @@ class IRIS:
         else:
             self.memory[query] = obj
 
-    #def run(self, python):
-        #exec(python)
-
 
     def execute(self, instruction):
         self.numExecutions += 1
-        print("Executing '" + str(instruction) + "'...") # DEBUG
+        #print("Executing '" + str(instruction) + "'...") # DEBUG
         if instruction[0] == "python": 
             #print("executing python " + str(instruction[1])) # DEBUG
             exec(instruction[1]);
@@ -138,3 +128,13 @@ class IRIS:
             # set argument counter
             self.set("#", i)
             self.execute(instructionContents[i])
+
+
+    def importthing(self):
+        import modules.math
+        #print(str(dir(modules.math)))
+        for thing in dir(modules.math):
+            if not thing.startswith("__"):
+                print(str(thing))
+            exec("self." + str(thing) + " = modules.math." + str(thing))
+        #self.plus(self)
