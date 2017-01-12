@@ -22,16 +22,17 @@ class IRIS:
             return self.get(query)
         return query
 
+    # TODO - any query surrounded in '' enforces literal
     def get(self, query):
         self.numGets += 1
         #print("attempting to get '" + str(query) + "'...") # DEBUG
         # check if just the concept, not getting in it
         if "*" not in str(query): 
-            if "/" in str(query):
-                parts = str(query).split("/")
-                #return parts[len(parts) - 1]
-                return self.tryReturnGet(parts[len(parts) - 1])
-            #return query
+            #if "/" in str(query):
+                #parts = str(query).split("/")
+                ##return parts[len(parts) - 1]
+                #return self.tryReturnGet(parts[len(parts) - 1])
+            ##return query
             return self.tryReturnGet(query)
 
         query = str(query).replace("*", "")
