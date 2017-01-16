@@ -1,0 +1,12 @@
+concatenate
+	python "self.set(self.get("@/0*"), str(self.get("@/1*")) + str(self.get("@/2*")))
+
+map
+	concatenate ~/mapConcept ':/' @/0*
+	concatenate ~/mapConcept ~/mapConcept* '*'
+	concatenate ~/mapConceptEnd ~/mapConcept '/end'
+	concatenate ~/mapConceptType ~/mapConcept '/type'
+	concatenate ~/mapConceptQuality ~/mapConcept '/quality'
+	concatenate ~/mapConceptQuantity ~/mapConcept '/quantity'
+
+	python "self.set(self.get("~/mapConceptEnd*"), self.get("@/2*"));self.set(self.get("~/mapConceptType*"), self.get("@/1*"));self.set(self.get("~/mapConceptQuality*"), self.get("@/3*"));self.set(self.get("~/mapConceptQuantity*"), self.get("@/4*"))"
